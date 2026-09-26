@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Galería · Toca Hierbas</title>
+<meta name="theme-color" content="#0f1210" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 12.5 9 9.2C7.6 7.7 5.9 6.8 5.1 6.8C5.1 6.8 5.4 10.2 7.4 12.5C9.4 14.8 12.2 15.4 12.2 19Z' fill='%238aab5c'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 11.3 15.2 8.5C16.6 7.2 18.3 6.5 19.1 6.5C19.1 6.5 18.8 10.1 16.8 12.5C14.7 14.9 12.2 15.6 12.2 19Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.admin-container{max-width:720px;margin:0 auto;padding:40px 24px;}
+.auth-form{text-align:center;}
+.auth-form h1{margin-bottom:8px;}
+.auth-form p{color:var(--text-dim);margin-bottom:24px;}
+.auth-form .input-group{display:flex;flex-direction:column;gap:16px;max-width:320px;margin:0 auto;text-align:left;}
+.auth-form label{font-size:0.9rem;color:var(--text-dim);}
+.auth-form input{padding:12px 16px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:inherit;font-size:1rem;}
+.auth-form input:focus{outline:none;border-color:var(--accent);}
+.auth-form .btn{margin-top:8px;width:100%;}
+.admin-panel{display:none;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.admin-panel h2{margin:0 0 24px;font-size:1.3rem;}
+.upload-form{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px;}
+.upload-form .row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.upload-form .field{flex:1;min-width:200px;}
+.upload-form label{display:block;font-size:0.85rem;color:var(--text-dim);margin-bottom:6px;}
+.upload-form input,.upload-form textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-family:inherit;font-size:0.95rem;}
+.upload-form input:focus,.upload-form textarea:focus{outline:none;border-color:var(--accent);}
+.upload-form textarea{min-height:80px;resize:vertical;}
+.drop-zone{border:2px dashed var(--border);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:rgba(138,171,92,0.05);}
+.drop-zone p{margin:0;color:var(--text-dim);}
+.drop-zone small{color:var(--text-dim);font-size:0.8rem;}
+.preview{margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;}
+.preview-item{position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.preview-item img,.preview-item video{width:100%;height:100%;object-fit:cover;}
+.preview-item button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.7);color:white;border:none;cursor:pointer;font-size:14px;line-height:1;}
+.gallery-list{max-height:400px;overflow:auto;}
+.gallery-item{display:flex;gap:12px;align-items:center;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;}
+.gallery-item img{width:60px;height:60px;object-fit:cover;border-radius:4px;}
+.gallery-item video{width:60px;height:60px;object-fit:cover;border-radius:4px;}
+.gallery-item .info{flex:1;min-width:0;}
+.gallery-item .title{font-weight:600;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gallery-item .meta{font-size:0.75rem;color:var(--text-dim);}
+.gallery-item .actions button{background:none;border:none;color:var(--text-dim);cursor:pointer;padding:4px 8px;font-size:0.8rem;}
+.gallery-item .actions button:hover{color:var(--accent-strong);}
+.empty-state{text-align:center;padding:40px;color:var(--text-dim);}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:4px;cursor:pointer;margin-top:16px;}
+.logout-btn:hover{border-color:var(--accent);color:var(--accent-strong);}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:1000;animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.toast.success{border-color:var(--accent);}
+.toast.error{border-color:#e04;}
+</style>
+</head>
+<body>
+
+<div class="bg-atmosphere" aria-hidden="true"></div>
+<div class="particles" aria-hidden="true" id="particles"></div>
+<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+<nav class="wrap">
+  <a href="index.html" class="wordmark">
+    <svg class="leaf-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/>
+      <path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/>
+    </svg>
+    Toca <span>Hierbas</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Inicio</a>
+    <a href="reglas.html">Reglas</a>
+    <a href="equipo.html">Equipo</a>
+    <a href="faq.html">FAQ</a>
+    <a href="galeria.html">Galería</a>
+    <a href="juego.html">Jugar</a>
+  </div>
+  <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
+</nav>
+
+<header class="page-hero wrap">
+  <h1>Admin Galería</h1>
+  <p>Gestiona las capturas de la comunidad</p>
+</header>
+
+<main class="wrap admin-container">
+  <div class="auth-form" id="auth-screen">
+    <h1>🔒 Acceso Restringido</h1>
+    <p>Introduce la contraseña para gestionar la galería</p>
+    <div class="input-group">
+      <label for="pwd-input">Contraseña</label>
+      <input type="password" id="pwd-input" placeholder="••••••••" autocomplete="current-password">
+      <button class="btn" id="login-btn"><span>Entrar</span></button>
+    </div>
+    <p style="margin-top:16px;font-size:0.8rem;color:var(--text-dim);">La contraseña se verifica en el navegador. No se envía a ningún servidor.</p>
+  </div>
+
+  <div class="admin-panel" id="admin-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <h2>📸 Gestor de Galería</h2>
+      <button class="logout-btn" id="logout-btn">Cerrar sesión</button>
+    </div>
+
+    <form class="upload-form" id="upload-form">
+      <div class="row">
+        <div class="field">
+          <label for="author-input">Tu nombre de usuario</label>
+          <input type="text" id="author-input" placeholder="ej. carlangs" required maxlength="30">
+        </div>
+        <div class="field">
+          <label for="date-input">Fecha (opcional, por defecto hoy)</label>
+          <input type="date" id="date-input">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:16px;">
+        <label for="caption-input">Descripción / Caption (opcional)</label>
+        <textarea id="caption-input" placeholder="Qué pasa en esta captura..."></textarea>
+      </div>
+      <label style="display:block;margin-bottom:8px;font-size:0.9rem;">Arrastra imágenes o videos aquí</label>
+      <div class="drop-zone" id="drop-zone">
+        <p>📁 Haz click o arrastra archivos (jpg, png, webp, mp4, webm, mov)</p>
+        <small>Máx 10MB por archivo • Múltiples archivos permitidos</small>
+        <input type="file" id="file-input" accept="image/*,video/*" multiple style="display:none;">
+      </div>
+      <div class="preview" id="preview"></div>
+      <button type="submit" class="btn" style="margin-top:16px;width:100%;"><span>💾 Guardar en galería</span></button>
+    </form>
+
+    <h3 style="margin:24px 0 12px;font-size:1rem;">📋 Entradas actuales</h3>
+    <div class="gallery-list" id="gallery-list">
+      <div class="empty-state">No hay entradas aún. Añade la primera arriba.</div>
+    </div>
+
+    <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
+      <h3 style="margin:0 0 12px;font-size:1rem;">🔧 Herramientas</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn" id="export-json" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>📥 Descargar gallery.json</span></button>
+        <button class="btn" id="clear-local" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>🗑️ Limpiar localStorage</span></button>
+      </div>
+      <p style="margin-top:12px;font-size:0.8rem;color:var(--text-dim);">El JSON descargado puedes commitearlo manualmente al repo en <code>public/gallery.json</code> para que persista en producción.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap">
+  Toca Hierbas · <span id="year"></span>
+</footer>
+
+<script src="script.js"></script>
+<script>
+const PASSWORD_HASH = "1f9c578e8f663ef2ea7597d34da6bc5cf25ca5a040c0d6dd3506dc7965188e22";
+const STORAGE_KEY = "th_gallery";
+
+function showToast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); }, 3000);
+}
+
+async function verifyPassword(input) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+  return hex === PASSWORD_HASH;
+}
+
+async function loadGallery() {
+  let items = [];
+  try {
+    const local = localStorage.getItem(STORAGE_KEY);
+    if (local) items = JSON.parse(local);
+  } catch (e) {}
+  try {
+    const res = await fetch("/gallery.json", {cache: "no-store"});
+    if (res.ok) {
+      const staticItems = await res.json();
+      const localMap = new Map(items.map(i => [i.slug, i]));
+      for (const s of staticItems) {
+        if (!localMap.has(s.slug)) items.push(s);
+      }
+    }
+  } catch (e) {}
+  items.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return items;
+}
+
+function saveGallery(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function renderAdminList(items) {
+  const el = document.getElementById("gallery-list");
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state">No hay entradas aún. Añade la primera arriba.</div>';
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const isVideo = item.url && item.url.match(/\.(mp4|webm|mov)$/i);
+    const media = isVideo
+      ? '<video src="' + item.url + '" muted playsinline></video>'
+      : '<img src="' + item.url + '" alt="' + item.title + '">';
+    const videoLabel = isVideo ? "• 🎬 Video" : "• 🖼️ Imagen";
+    const displayDate = item.displayDate || item.date;
+    return (
+      '<div class="gallery-item" data-slug="' + item.slug + '">' +
+      media +
+      '<div class="info">' +
+      '<div class="title">' + item.title + '</div>' +
+      '<div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div>' +
+      '</div>' +
+      '<div class="actions"><button onclick="deleteItem('' + item.slug + '')">Eliminar</button></div>' +
+      '</div>'
+    );
+  }).join("");
+}
+
+function deleteItem(slug) {
+  if (!confirm("¿Eliminar esta entrada?")) return;
+  loadGallery().then(items => {
+    items = items.filter(i => i.slug !== slug);
+    saveGallery(items);
+    renderAdminList(items);
+    showToast("Entrada eliminada");
+  });
+}
+
+const dropZone = document.getElementById("drop-zone");
+const fileInput = document.getElementById("file-input");
+const preview = document.getElementById("preview");
+let pendingFiles = [];
+
+["dragenter", "dragover"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag"); }));
+["dragleave", "drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag"); }));
+dropZone.addEventListener("drop", e => { addFiles(Array.from(e.dataTransfer.files)); });
+dropZone.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => { addFiles(Array.from(e.target.files)); fileInput.value = ""; });
+
+function addFiles(files) {
+  for (const file of files) {
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(file.name + ": demasiado grande (max 10MB)", "error");
+      continue;
+    }
+    if (pendingFiles.some(f => f.name === file.name && f.size === file.size)) continue;
+    pendingFiles.push(file);
+    renderPreview(file);
+  }
+}
+
+function renderPreview(file) {
+  const div = document.createElement("div");
+  div.className = "preview-item";
+  div.dataset.name = file.name;
+  const url = URL.createObjectURL(file);
+  const isVideo = file.type.startsWith("video/");
+  div.innerHTML = (isVideo ? '<video src="' + url + '" muted playsinline></video>' : '<img src="' + url + '" alt="">') + '<button onclick="removePreview('' + file.name + '')">×</button>';
+  preview.appendChild(div);
+}
+
+function removePreview(name) {
+  pendingFiles = pendingFiles.filter(f => f.name !== name);
+  const el = preview.querySelector('[data-name="' + name + '"]');
+  if (el) {
+    const media = el.querySelector("img,video");
+    if (media) URL.revokeObjectURL(media.src);
+    el.remove();
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById("upload-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!pendingFiles.length) { showToast("Añade al menos un archivo", "error"); return; }
+
+  const author = document.getElementById("author-input").value.trim() || "Anónimo";
+  const date = document.getElementById("date-input").value || new Date().toISOString().split("T")[0];
+  const caption = document.getElementById("caption-input").value.trim();
+
+  const items = await loadGallery();
+  let added = 0;
+
+  for (const file of pendingFiles) {
+    const isVideo = file.type.startsWith("video/");
+    const base64 = await fileToBase64(file);
+    const slug = date + "-" + file.name.replace(/[^a-z0-9.]/gi, "-").toLowerCase() + "-" + Date.now();
+    const item = {
+      slug,
+      title: caption || file.name.replace(/\.[^.]+$/, ""),
+      author,
+      date,
+      displayDate: new Date(date).toLocaleDateString("es-ES"),
+      url: base64,
+      isVideo,
+      caption
+    };
+    items.push(item);
+    added++;
+  }
+
+  saveGallery(items);
+  renderAdminList(items);
+  pendingFiles = [];
+  preview.innerHTML = "";
+  document.getElementById("caption-input").value = "";
+  showToast(added + " archivo(s) guardado(s) localmente");
+});
+
+document.getElementById("export-json").addEventListener("click", async () => {
+  const items = await loadGallery();
+  const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
+  const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "gallery.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("gallery.json descargado");
+});
+
+document.getElementById("clear-local").addEventListener("click", () => {
+  if (confirm("¿Borrar TODOS los datos locales? (No afecta al JSON estático)")) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderAdminList([]);
+    showToast("localStorage limpiado");
+  }
+});
+
+document.getElementById("login-btn").addEventListener("click", async () => {
+  const pwd = document.getElementById("pwd-input").value;
+  if (await verifyPassword(pwd)) {
+    document.getElementById("auth-screen").style.display = "none";
+    document.getElementById("admin-panel").style.display = "block";
+    const items = await loadGallery();
+    renderAdminList(items);
+    document.getElementById("date-input").value = new Date().toISOString().split("T")[0];
+    const savedAuthor = localStorage.getItem("th_author");
+    if (savedAuthor) document.getElementById("author-input").value = savedAuthor;
+  } else {
+    showToast("Contraseña incorrecta", "error");
+    document.getElementById("pwd-input").value = "";
+  }
+});
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  document.getElementById("admin-panel").style.display = "none";
+  document.getElementById("auth-screen").style.display = "block";
+  document.getElementById("pwd-input").value = "";
+});
+
+document.getElementById("author-input").addEventListener("change", e => {
+  localStorage.setItem("th_author", e.target.value);
+});
+
+if (window.initParticles) window.initParticles();
+</script>
+</body>
+</html>
