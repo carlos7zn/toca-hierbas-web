@@ -3,14 +3,88 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Jugar · Toca Hierbas</title>
-<meta name="description" content="Mini-juego Corta la Hierba, de la comunidad Toca Hierbas." />
+<title>Biblioteca de Juegos · Toca Hierbas</title>
+<meta name="description" content="Minijuegos y arcade de la comunidad Toca Hierbas. Corta Hierbas, Atrapa las Hojas y más." />
 <meta name="theme-color" content="#0f1210" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 12.5 9 9.2C7.6 7.7 5.9 6.8 5.1 6.8C5.1 6.8 5.4 10.2 7.4 12.5C9.4 14.8 12.2 15.4 12.2 19Z' fill='%238aab5c'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 11.3 15.2 8.5C16.6 7.2 18.3 6.5 19.1 6.5C19.1 6.5 18.8 10.1 16.8 12.5C14.7 14.9 12.2 15.6 12.2 19Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+.game-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.game-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(138,171,92,0.06), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.game-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.3), 0 0 0 1px var(--accent);
+  background: var(--surface-elevated);
+}
+.game-card:hover::before {
+  opacity: 1;
+}
+.game-card-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-strong);
+  background: rgba(138,171,92,0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+}
+.game-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem;
+  margin: 0;
+  color: var(--text);
+}
+.game-card p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+.game-card .author {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  opacity: 0.8;
+}
+
+/* Classic embedded clicker mini-game styling */
+.arcade-section {
+  margin-top: 60px;
+  border-top: 1px solid var(--border);
+  padding-top: 60px;
+}
+</style>
 </head>
 <body>
 
@@ -32,7 +106,7 @@
     <a href="equipo.html">Equipo</a>
     <a href="faq.html">FAQ</a>
     <a href="galeria.html">Galería</a>
-    <a href="juego.html">Jugar</a>
+    <a href="juego.html" class="active">Juegos</a>
     <a href="privacidad.html">Privacidad</a>
     <a href="terminos.html">Términos</a>
     <a href="admin.html" class="admin-link" title="Administrar galería">⚙️</a>
@@ -40,22 +114,55 @@
   <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
 </nav>
 
-
 <header class="page-hero wrap reveal up">
-  <h1>Corta la hierba</h1>
-  <p>20 segundos. Haz click en las hojas que aparezcan. Así de simple.</p>
+  <h1>Biblioteca de Juegos 🎮</h1>
+  <p>Minijuegos creados por la comunidad de Toca Hierbas para pasar el rato entre partida y partida.</p>
 </header>
 
 <section class="wrap reveal up">
-  <div class="game-wrap">
+  <h2>Juegos destacados</h2>
+  <div class="games-grid">
+    <!-- Corta Hierbas -->
+    <div class="game-card reveal up">
+      <span class="game-card-tag">🚜 Acción & Survival</span>
+      <h3>Corta Hierbas</h3>
+      <p>Maneja tu cortacésped, esquiva rocas, macetas, gnomos y aspersores peligrosos. Recoge botellas de kéfir y bate el récord mundial en este juegazo arcade.</p>
+      <div class="author">Creador: Bad Kefir</div>
+      <a href="corta-hierbas.html" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Corta Hierbas →</span></a>
+    </div>
+
+    <!-- Atrapa las Hojas -->
+    <div class="game-card reveal up">
+      <span class="game-card-tag">⚡ Minijuego Clásico</span>
+      <h3>Atrapa las Hojas</h3>
+      <p>Tienes 20 segundos. Haz click tan rápido como puedas en las hojas que aparezcan en pantalla para conseguir la máxima puntuación.</p>
+      <div class="author">Creador: Toca Hierbas</div>
+      <a href="#classic-game" class="btn btn-ghost" style="margin-top: 8px;"><span>Jugar abajo ↓</span></a>
+    </div>
+
+    <!-- Sube tu juego -->
+    <div class="game-card reveal up">
+      <span class="game-card-tag">🌱 Comunidad</span>
+      <h3>¿Tienes un juego?</h3>
+      <p>¿Has creado un minijuegos en HTML/JS y quieres que aparezca en la web oficial de Toca Hierbas? ¡Compártelo con nosotros en Discord!</p>
+      <div class="author">Comunidad Toca Hierbas</div>
+      <a href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener" class="btn btn-ghost" style="margin-top: 8px;"><span>Proponer en Discord ↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- Classic Clicker Game Section -->
+<section class="wrap arcade-section reveal up" id="classic-game">
+  <h2>Minijuego clásico: Atrapa la hierba</h2>
+  <div class="game-wrap" style="max-width: 640px;">
     <div class="game-hud">
       <span>Puntos: <strong id="game-score">0</strong></span>
       <span>Tiempo: <strong id="game-time">20</strong>s</span>
     </div>
-    <div class="game-area" id="game-area">
-      <div class="game-empty">Dale a "Jugar" para empezar.</div>
+    <div class="game-area" id="game-area" style="cursor: pointer; position: relative;">
+      <div class="game-empty">Dale a "Jugar" para empezar la ronda rápida.</div>
     </div>
-    <button class="btn" id="game-start"><span>Jugar</span></button>
+    <button class="btn" id="game-start" style="margin-top: 16px;"><span>Jugar Atrapa la Hierba</span></button>
   </div>
 </section>
 
@@ -64,5 +171,78 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+// Classic mini-game logic for Atrapa la Hierba
+document.addEventListener('DOMContentLoaded', () => {
+  const startBtn = document.getElementById('game-start');
+  const gameArea = document.getElementById('game-area');
+  const scoreEl = document.getElementById('game-score');
+  const timeEl = document.getElementById('game-time');
+  
+  if(!startBtn || !gameArea) return;
+
+  let score = 0;
+  let timeLeft = 20;
+  let timerId = null;
+  let spawnerId = null;
+  let gamePlaying = false;
+
+  function spawnLeaf(){
+    if(!gamePlaying) return;
+    const leaf = document.createElement('button');
+    leaf.className = 'grass-target';
+    leaf.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/><path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/></svg>`;
+    
+    const maxX = gameArea.clientWidth - 50;
+    const maxY = gameArea.clientHeight - 50;
+    const x = Math.max(10, Math.floor(Math.random() * maxX));
+    const y = Math.max(10, Math.floor(Math.random() * maxY));
+    
+    leaf.style.left = x + 'px';
+    leaf.style.top = y + 'px';
+    
+    leaf.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(!gamePlaying) return;
+      score++;
+      scoreEl.textContent = score;
+      leaf.remove();
+    });
+    
+    gameArea.appendChild(leaf);
+    
+    setTimeout(() => {
+      if(leaf.parentElement) leaf.remove();
+    }, 1200);
+  }
+
+  startBtn.addEventListener('click', () => {
+    if(gamePlaying) return;
+    gamePlaying = true;
+    score = 0;
+    timeLeft = 20;
+    scoreEl.textContent = score;
+    timeEl.textContent = timeLeft;
+    gameArea.innerHTML = '';
+    startBtn.style.display = 'none';
+
+    timerId = setInterval(() => {
+      timeLeft--;
+      timeEl.textContent = timeLeft;
+      if(timeLeft <= 0){
+        clearInterval(timerId);
+        clearInterval(spawnerId);
+        gamePlaying = false;
+        gameArea.innerHTML = `<div class="game-empty">¡Tiempo agotado! Has conseguido <strong>${score}</strong> puntos.</div>`;
+        startBtn.style.display = 'inline-flex';
+        startBtn.querySelector('span').textContent = 'Jugar otra vez';
+      }
+    }, 1000);
+
+    spawnerId = setInterval(spawnLeaf, 600);
+    spawnLeaf();
+  });
+});
+</script>
 </body>
 </html>
