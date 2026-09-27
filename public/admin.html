@@ -75,7 +75,6 @@
     <a href="reglas.html">Reglas</a>
     <a href="equipo.html">Equipo</a>
     <a href="faq.html">FAQ</a>
-    <a href="galeria.html">Galería</a>
     <a href="juego.html">Jugar</a>
   </div>
   <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
@@ -249,7 +248,7 @@ function renderAdminList(items) {
       '<div class="title">' + item.title + '</div>' +
       '<div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div>' +
       '</div>' +
-      '<div class="actions"><button onclick="deleteItem(\'" + item.slug + "\')">Eliminar</button></div>' +
+      '<div class="actions"><button onclick="deleteItem('' + item.slug + '')">Eliminar</button></div>' +
       '</div>'
     );
   }).join("");
@@ -257,15 +256,12 @@ function renderAdminList(items) {
 
 window.deleteItem = async function(slug) {
   if (!confirm("¿Eliminar esta entrada?")) return;
-  // Delete from Supabase if it has an id
   const { data: item } = await supabase.from('gallery_items').select('id').eq('slug', slug).single();
   if (item?.id) {
     await supabase.from('gallery_items').delete().eq('id', item.id);
-    // Also delete file from storage
     const { data: files } = await supabase.storage.from('gallery').list('', { search: slug });
     if (files?.length) await supabase.storage.from('gallery').remove(files.map(f => f.name));
   }
-  // Local
   const items = await loadGallery();
   const filtered = items.filter(i => i.slug !== slug);
   saveGallery(filtered);
@@ -273,298 +269,20 @@ window.deleteItem = async function(slug) {
   showToast("Entrada eliminada");
 };
 
+async function loadAndRender() {
+  const items = await loadGallery();
+  renderAdminList(items);
+}
+
 async function init() {
-  // Auth check
-  const { data: { session } } = await supabase.auth.getSession();
+  // Skip auth, go directly to admin panel
   const authScreen = document.getElementById("auth-screen");
   const adminPanel = document.getElementById("admin-panel");
-  const loginBtn = document.getElementById("login-btn");
-  const pwdInput = document.getElementById("pwd-input");
-
-  if (session) {
-    authScreen.style.display = "none";
-    adminPanel.style.display = "block";
-    loadAndRender();
-  } else {
-    authScreen.style.display = "block";
-    adminPanel.style.display = "none";
-  }
-
-  // Login handler - ultra robust with detailed logging
-  console.log("Setting up login handler...");
-  if (loginBtn && pwdInput && authScreen && adminPanel) {
-    console.log("Login elements found:", { loginBtn, pwdInput, authScreen, adminPanel });
-    
-    loginBtn.addEventListener("click", async () => {
-      console.log("Login button clicked");
-      const password = pwdInput.value;
-      console.log("Password length:", password?.length);
-      if (!password) { showToast("Introduce la contraseña", "error"); return; }
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = '<span>Verificando...</span>';
-      
-      let success = false;
-      
-      // Try Supabase auth first
-      try {
-        console.log("Trying Supabase auth...");
-        const email = "admin@toca-hierbas.com";
-        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-        console.log("Supabase auth result:", { error, data });
-        if (!error) {
-          success = true;
-          console.log("Supabase auth OK");
-        } else {
-          console.warn("Supabase auth failed:", error.message);
-        }
-      } catch (err) {
-        console.warn("Supabase auth exception:", err.message);
-      }
-      
-      // Fallback: local SHA-256 verification (ALWAYS works)
-      if (!success) {
-        try {
-          console.log("Trying local fallback auth...");
-          const encoder = new TextEncoder();
-          const data = encoder.encode(password);
-          const hash = await crypto.subtle.digest("SHA-256", data);
-          const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
-          console.log("Computed hash:", hex);
-          const EXPECTED_HASH = "1f9c578e8f663ef2ea7597d34da6bc5cf25ca5a040c0d6dd3506dc7965188e22";
-          console.log("Expected hash:", EXPECTED_HASH);
-          if (hex === EXPECTED_HASH) {
-            success = true;
-            console.log("Local fallback auth OK");
-          } else {
-            console.warn("Hash mismatch!");
-          }
-        } catch (e) {
-          console.error("Local auth error:", e);
-        }
-      }
-      
-      console.log("Final success:", success);
-      
-      if (success) {
-        authScreen.style.display = "none";
-        adminPanel.style.display = "block";
-        pwdInput.value = "";
-        showToast("Acceso concedido");
-        loadAndRender();
-      } else {
-        showToast("Contraseña incorrecta", "error");
-        pwdInput.value = "";
-      }
-      
-      loginBtn.disabled = false;
-      loginBtn.innerHTML = '<span>Entrar</span>';
-    });
-    pwdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
-    
-    // Also add click handler directly as backup
-    loginBtn.onclick = null; // Clear any previous
-  } else {
-    console.error("Login elements NOT found:", { 
-      loginBtn: !!loginBtn, 
-      pwdInput: !!pwdInput, 
-      authScreen: !!authScreen, 
-      adminPanel: !!adminPanel 
-    });
-  }
-
-  // Logout
-  const logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      authScreen.style.display = "block";
-      adminPanel.style.display = "none";
-    });
-  }
-
-  // Author dropdown
-  const authorSelect = document.getElementById("author-input");
-  const authorCustom = document.getElementById("author-custom");
-  if (authorSelect && authorCustom) {
-    authorSelect.addEventListener("change", () => {
-      authorCustom.style.display = authorSelect.value === "custom" ? "block" : "none";
-      if (authorSelect.value !== "custom") authorCustom.value = "";
-    });
-  }
-
-  // Drop zone
-  const dropZone = document.getElementById("drop-zone");
-  const fileInput = document.getElementById("file-input");
-  const preview = document.getElementById("preview");
-  window.pendingFiles = window.pendingFiles || [];
-
-  function addFiles(files) {
-    for (const file of files) {
-      if (file.size > 50 * 1024 * 1024) {
-        showToast(file.name + ": demasiado grande (max 50MB)", "error");
-        continue;
-      }
-      const isDup = window.pendingFiles.some(f => f.name === file.name && f.size === file.size);
-      if (isDup) continue;
-      window.pendingFiles.push(file);
-      renderPreview(file);
-    }
-  }
-
-  function renderPreview(file) {
-    const div = document.createElement("div");
-    div.className = "preview-item";
-    div.dataset.name = file.name;
-    const url = URL.createObjectURL(file);
-    const isVideo = file.type.startsWith("video/");
-    div.innerHTML = (isVideo
-      ? '<video src="' + url + '" muted playsinline></video>'
-      : '<img src="' + url + '" alt="">') +
-      '<button type="button" onclick="removePreview(\'" + file.name + "\')">×</button>';
-    if (preview) preview.appendChild(div);
-  }
-
-  window.removePreview = function(name) {
-    window.pendingFiles = window.pendingFiles.filter(f => f.name !== name);
-    const el = preview?.querySelector('[data-name="' + name + '"]');
-    if (el) {
-      const media = el.querySelector("img,video");
-      if (media) URL.revokeObjectURL(media.src);
-      el.remove();
-    }
-  };
-
-  if (dropZone && fileInput && preview) {
-    ["dragenter", "dragover"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag"); }));
-    ["dragleave", "drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag"); }));
-    dropZone.addEventListener("drop", e => { addFiles(Array.from(e.dataTransfer.files)); });
-    dropZone.addEventListener("click", () => fileInput.click());
-    fileInput.addEventListener("change", e => { addFiles(Array.from(e.target.files)); fileInput.value = ""; });
-  }
-
-  // Upload form - direct to Supabase
-  const uploadForm = document.getElementById("upload-form");
-  if (uploadForm) {
-    uploadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!window.pendingFiles?.length) { showToast("Añade al menos un archivo", "error"); return; }
-
-      const authorSelect = document.getElementById("author-input");
-      const authorCustom = document.getElementById("author-custom");
-      let author = authorSelect ? authorSelect.value : "";
-      if (author === "custom") author = authorCustom ? authorCustom.value.trim() : "";
-      author = author || "Anónimo";
-      if (authorSelect) localStorage.setItem("th_author", author);
-
-      const captionInput = document.getElementById("caption-input");
-      const caption = captionInput ? captionInput.value.trim() : "";
-      const dateInput = document.getElementById("date-input");
-      const date = dateInput ? (dateInput.value || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
-
-      const submitBtn = uploadForm.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Subiendo...</span>';
-
-      try {
-        const items = await loadGallery();
-        let uploaded = 0;
-
-        for (const file of window.pendingFiles) {
-          const isVideo = file.type.startsWith("video/");
-          const timestamp = Date.now();
-          const cleanName = file.name.replace(/[^a-z0-9.]/gi, "-").toLowerCase();
-          const storagePath = date + "-" + cleanName + "-" + timestamp;
-          const slug = storagePath;
-
-          // Upload to Supabase Storage
-          const { error: uploadError } = await supabase.storage
-            .from('gallery')
-            .upload(storagePath, file, { cacheControl: '3600', upsert: false });
-          if (uploadError) throw uploadError;
-
-          // Get public URL
-          const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(storagePath);
-
-          // Insert into gallery_items table
-          const { error: dbError } = await supabase.from('gallery_items').insert({
-            slug,
-            title: caption || file.name.replace(/\.[^.]+$/, ""),
-            author,
-            date,
-            displayDate: new Date(date).toLocaleDateString("es-ES"),
-            url: publicUrl,
-            is_video: isVideo,
-            caption,
-            created_at: new Date().toISOString()
-          });
-          if (dbError) throw dbError;
-
-          items.push({
-            slug,
-            title: caption || file.name.replace(/\.[^.]+$/, ""),
-            author,
-            date,
-            displayDate: new Date(date).toLocaleDateString("es-ES"),
-            url: publicUrl,
-            isVideo,
-            caption
-          });
-          uploaded++;
-        }
-
-        saveGallery(items);
-        renderAdminList(items);
-        window.pendingFiles = [];
-        if (preview) preview.innerHTML = "";
-        if (captionInput) captionInput.value = "";
-        showToast(uploaded + " archivo(s) subido(s) y público(s) al instante");
-      } catch (err) {
-        console.error("Upload error:", err);
-        showToast("Error subiendo: " + err.message, "error");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>💾 Guardar en galería</span>';
-      }
-    });
-  }
-
-  // Export JSON
-  const exportBtn = document.getElementById("export-json");
-  if (exportBtn) {
-    exportBtn.addEventListener("click", async () => {
-      const items = await loadGallery();
-      const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
-      const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "gallery.json";
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast("gallery.json descargado");
-    });
-  }
-
-  // Clear localStorage
-  const clearBtn = document.getElementById("clear-local");
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      if (confirm("¿Borrar TODOS los datos locales? (No afecta a Supabase)")) {
-        localStorage.removeItem(STORAGE_KEY);
-        renderAdminList([]);
-        showToast("localStorage limpiado");
-      }
-    });
-  }
-
-  async function loadAndRender() {
-    const items = await loadGallery();
-    renderAdminList(items);
-  }
-
+  if (authScreen) authScreen.style.display = "none";
+  if (adminPanel) adminPanel.style.display = "block";
+  await loadAndRender();
   // Init particles
   if (window.initParticles) window.initParticles();
-
   // Real-time subscription for gallery updates
   supabase
     .channel('gallery-changes')
@@ -574,6 +292,45 @@ async function init() {
     })
     .subscribe();
 }
+
+// Export JSON
+const exportBtn = document.getElementById("export-json");
+if (exportBtn) {
+  exportBtn.addEventListener("click", async () => {
+    const items = await loadGallery();
+    const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
+    const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "gallery.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("gallery.json descargado");
+  });
+}
+
+// Clear localStorage
+const clearBtn = document.getElementById("clear-local");
+if (clearBtn) {
+  clearBtn.addEventListener("click", () => {
+    if (confirm("¿Borrar TODOS los datos locales? (No afecta a Supabase)")) {
+      localStorage.removeItem(STORAGE_KEY);
+      renderAdminList([]);
+      showToast("localStorage limpiado");
+    }
+  });
+}
+
+// Init particles
+if (window.initParticles) window.initParticles();
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
 
 function showToast(msg, type = "success") {
   const t = document.createElement("div");
