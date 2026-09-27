@@ -317,6 +317,57 @@
       });
     }
 
+    // Drop zone event listeners
+    const dropZone = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
+    const preview = document.getElementById("preview");
+    window.pendingFiles = window.pendingFiles || [];
+
+    function addFiles(files) {
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          showToast(file.name + ": demasiado grande (max 10MB)", "error");
+          continue;
+        }
+        // Check for duplicates
+        const isDup = window.pendingFiles.some(f => f.name === file.name && f.size === file.size);
+        if (isDup) continue;
+        window.pendingFiles.push(file);
+        renderPreview(file);
+      }
+    }
+
+    function renderPreview(file) {
+      const div = document.createElement("div");
+      div.className = "preview-item";
+      div.dataset.name = file.name;
+      const url = URL.createObjectURL(file);
+      const isVideo = file.type.startsWith("video/");
+      div.innerHTML = (isVideo 
+        ? '<video src="' + url + '" muted playsinline></video>' 
+        : '<img src="' + url + '" alt="">') + 
+        '<button type="button" onclick="removePreview(\'" + file.name + "\')">×</button>';
+      if (preview) preview.appendChild(div);
+    }
+
+    window.removePreview = function(name) {
+      window.pendingFiles = window.pendingFiles.filter(f => f.name !== name);
+      const el = preview?.querySelector('[data-name="' + name + '"]');
+      if (el) {
+        const media = el.querySelector("img,video");
+        if (media) URL.revokeObjectURL(media.src);
+        el.remove();
+      }
+    };
+
+    if (dropZone && fileInput && preview) {
+      ["dragenter", "dragover"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag"); }));
+      ["dragleave", "drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag"); }));
+      dropZone.addEventListener("drop", e => { addFiles(Array.from(e.dataTransfer.files)); });
+      dropZone.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", e => { addFiles(Array.from(e.target.files)); fileInput.value = ""; });
+    }
+
     // Upload form
     const uploadForm = document.getElementById("upload-form");
     if (uploadForm) {
