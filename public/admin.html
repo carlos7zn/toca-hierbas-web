@@ -108,7 +108,18 @@
       <div class="row">
         <div class="field">
           <label for="author-input">Tu nombre de usuario</label>
-          <input type="text" id="author-input" placeholder="ej. carlangs" required maxlength="30">
+          <select id="author-input" required>
+            <option value="">-- Selecciona o escribe --</option>
+            <option value="carlangs">carlangs</option>
+            <option value="hierbero">hierbero</option>
+            <option value="hotweels_mechanic">hotweels_mechanic</option>
+            <option value="bAd_KeFir">bAd_KeFir</option>
+            <option value="THB">THB</option>
+            <option value="pepe">pepe</option>
+            <option value="usuario_123">usuario_123</option>
+            <option value="custom">✏️ Otro (escribir manual)</option>
+          </select>
+          <input type="text" id="author-custom" placeholder="Escribe tu nombre" maxlength="30" style="display:none;margin-top:8px;">
         </div>
         <div class="field">
           <label for="date-input">Fecha (opcional, por defecto hoy)</label>
@@ -146,7 +157,7 @@
 </main>
 
 <footer class="wrap">
-  Toca Hierbas · <span id="year"></span>
+  Toca Hierbas · <span id="year"></span> · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a>
 </footer>
 
 <script src="script.js"></script>
@@ -286,7 +297,11 @@ document.getElementById("upload-form").addEventListener("submit", async e => {
   e.preventDefault();
   if (!pendingFiles.length) { showToast("Añade al menos un archivo", "error"); return; }
 
-  const author = document.getElementById("author-input").value.trim() || "Anónimo";
+  let author = document.getElementById("author-input").value;
+    if (author === "custom") {
+      author = document.getElementById("author-custom").value.trim();
+    }
+    author = author || "Anónimo";
   const date = document.getElementById("date-input").value || new Date().toISOString().split("T")[0];
   const caption = document.getElementById("caption-input").value.trim();
 
@@ -381,6 +396,29 @@ document.getElementById("author-input").addEventListener("change", e => {
 });
 
 if (window.initParticles) window.initParticles();
+
+// Author dropdown: show/hide custom input
+const authorSelect = document.getElementById("author-input");
+const authorCustom = document.getElementById("author-custom");
+if (authorSelect && authorCustom) {
+  authorSelect.addEventListener("change", () => {
+    authorCustom.style.display = authorSelect.value === "custom" ? "block" : "none";
+    if (authorSelect.value !== "custom") {
+      authorCustom.value = "";
+    }
+  });
+  // On form submit, use custom value if selected
+  const form = document.getElementById("upload-form");
+  form.addEventListener("submit", () => {
+    if (authorSelect.value === "custom" && authorCustom.value.trim()) {
+      // Store the custom value for this submission
+      authorSelect.dataset.customValue = authorCustom.value.trim();
+    }
+  });
+  // Override the value getter in the submit handler
+  const originalGetAuthor = () => document.getElementById("author-input").value;
+  // We'll handle this in the submit handler directly
+}
 </script>
 </body>
 </html>
