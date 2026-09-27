@@ -1,16 +1,1 @@
-{
-  "buildCommand": "node scripts/generate-gallery.js",
-  "outputDirectory": "public",
-  "framework": null,
-  "rewrites": [
-    { "source": "/admin/(.*)", "destination": "/admin/$1" }
-  ],
-  "headers": [
-    {
-      "source": "/admin/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
-      ]
-    }
-  ]
-}
+{"buildCommand": "npm run build", "framework": "nextjs", "outputDirectory": ".next"}
