@@ -33,16 +33,16 @@
     <a href="faq.html">FAQ</a>
     <a href="galeria.html" class="active">Galería</a>
     <a href="juego.html">Jugar</a>
-      <a href="privacidad.html">Privacidad</a>
+    <a href="privacidad.html">Privacidad</a>
     <a href="terminos.html">Términos</a>
     <a href="admin.html" class="admin-link" title="Administrar galería">⚙️</a>
-</div>
+  </div>
   <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
 </nav>
 
 <header class="page-hero wrap reveal up">
   <h1>Galería</h1>
-  <p>Momentos, capturas y vergüenzas de la comunidad.</p>
+  <p>Momentos, capturas y vergüenzas de la comunidad. Se actualiza en tiempo real.</p>
 </header>
 
 <section class="wrap reveal up">
@@ -59,28 +59,33 @@
 </footer>
 
 <script src="script.js"></script>
-<script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL = "https://ffiwqkvftwosybubnerh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_t__IyaSL9g4v0HNNZjFk9Q_te0hZnos";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const STORAGE_KEY = "th_gallery";
 
 async function loadGallery() {
   let items = [];
-  // 1. localStorage (local additions)
   try {
     const local = localStorage.getItem(STORAGE_KEY);
     if (local) items = JSON.parse(local);
   } catch (e) {}
-  // 2. Static JSON (committed to repo)
   try {
-    const res = await fetch("/gallery.json", {cache: "no-store"});
-    if (res.ok) {
-      const staticItems = await res.json();
+    const { data, error } = await supabase
+      .from('gallery_items')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data) {
       const localMap = new Map(items.map(i => [i.slug, i]));
-      for (const s of staticItems) {
+      for (const s of data) {
         if (!localMap.has(s.slug)) items.push(s);
       }
     }
   } catch (e) {}
-  // Sort by date desc (newest first)
   items.sort((a, b) => new Date(b.date) - new Date(a.date));
   return items;
 }
@@ -92,7 +97,7 @@ function renderGallery(items) {
     return;
   }
   grid.innerHTML = items.map(item => {
-    const isVideo = item.url && item.url.match(/\.(mp4|webm|mov)$/i);
+    const isVideo = item.is_video || (item.url && item.url.match(/\.(mp4|webm|mov)$/i));
     const mediaTag = isVideo
       ? '<video src="' + item.url + '" muted preload="metadata" playsinline></video>'
       : '<img src="' + item.url + '" alt="' + item.title + '" loading="lazy">';
@@ -112,7 +117,6 @@ function renderGallery(items) {
       '</a>'
     );
   }).join("");
-  // Re-observe reveals
   if (window.io) {
     document.querySelectorAll("#gallery-grid .reveal").forEach(el => window.io.observe(el));
   }
@@ -121,7 +125,39 @@ function renderGallery(items) {
 async function init() {
   const items = await loadGallery();
   renderGallery(items);
+
+  // Real-time updates
+  supabase
+    .channel('gallery-public')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_items' }, async () => {
+      const items = await loadGallery();
+      renderGallery(items);
+    })
+    .subscribe();
 }
+
+async function loadGallery() {
+  let items = [];
+  try {
+    const local = localStorage.getItem(STORAGE_KEY);
+    if (local) items = JSON.parse(local);
+  } catch (e) {}
+  try {
+    const { data, error } = await supabase
+      .from('gallery_items')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data) {
+      const localMap = new Map(items.map(i => [i.slug, i]));
+      for (const s of data) {
+        if (!localMap.has(s.slug)) items.push(s);
+      }
+    }
+  } catch (e) {}
+  items.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return items;
+}
+
 init();
 </script>
 </body>

@@ -185,329 +185,355 @@
 </footer>
 
 <script src="script.js"></script>
-<script>
-// ===== Admin Gallery Script =====
-(function() {
-  "use strict";
-  
-  const PASSWORD_HASH = "1f9c578e8f663ef2ea7597d34da6bc5cf25ca5a040c0d6dd3506dc7965188e22";
-  const STORAGE_KEY = "th_gallery";
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  function showToast(msg, type = "success") {
-    const t = document.createElement("div");
-    t.className = "toast " + type;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => { t.remove(); }, 3000);
-  }
+const SUPABASE_URL = "https://ffiwqkvftwosybubnerh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_t__IyaSL9g4v0HNNZjFk9Q_te0hZnos";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function verifyPassword(input) {
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(input);
-      const hash = await crypto.subtle.digest("SHA-256", data);
-      const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
-      return hex === PASSWORD_HASH;
-    } catch (err) {
-      console.error("verifyPassword error:", err);
-      // Fallback: direct comparison (shouldn't happen on HTTPS)
-      return input === "hierbas2026";
-    }
-  }
+const STORAGE_KEY = "th_gallery";
 
-  async function loadGallery() {
-    let items = [];
-    try {
-      const local = localStorage.getItem(STORAGE_KEY);
-      if (local) items = JSON.parse(local);
-    } catch (e) {}
-    try {
-      const res = await fetch("/gallery.json", {cache: "no-store"});
-      if (res.ok) {
-        const staticItems = await res.json();
-        const localMap = new Map(items.map(i => [i.slug, i]));
-        for (const s of staticItems) {
-          if (!localMap.has(s.slug)) items.push(s);
-        }
-      }
-    } catch (e) {}
-    items.sort((a, b) => new Date(b.date) - new Date(a.date));
-    return items;
-  }
+function showToast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); }, 3000);
+}
 
-  function saveGallery(items) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }
-
-  function renderAdminList(items) {
-    const el = document.getElementById("gallery-list");
-    if (!el) return;
-    if (!items.length) {
-      el.innerHTML = '<div class="empty-state">No hay entradas aún. Añade la primera arriba.</div>';
-      return;
-    }
-    el.innerHTML = items.map(item => {
-      const isVideo = item.url && item.url.match(/\.(mp4|webm|mov)$/i);
-      const media = isVideo
-        ? '<video src="' + item.url + '" muted playsinline></video>'
-        : '<img src="' + item.url + '" alt="' + item.title + '">';
-      const videoLabel = isVideo ? "• 🎬 Video" : "• 🖼️ Imagen";
-      const displayDate = item.displayDate || item.date;
-      return (
-        '<div class="gallery-item" data-slug="' + item.slug + '">' +
-        media +
-        '<div class="info">' +
-        '<div class="title">' + item.title + '</div>' +
-        '<div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div>' +
-        '</div>' +
-        '<div class="actions"><button onclick="deleteItem(\'" + item.slug + "\')">Eliminar</button></div>' +
-        '</div>'
-      );
-    }).join("");
-  }
-
-  window.deleteItem = function(slug) {
-    if (!confirm("¿Eliminar esta entrada?")) return;
-    loadGallery().then(items => {
-      items = items.filter(i => i.slug !== slug);
-      saveGallery(items);
-      renderAdminList(items);
-      showToast("Entrada eliminada");
-    });
-  };
-
-  function init() {
-    // Login handler
-    const loginBtn = document.getElementById("login-btn");
-    const pwdInput = document.getElementById("pwd-input");
-    const authScreen = document.getElementById("auth-screen");
-    const adminPanel = document.getElementById("admin-panel");
-
-    if (loginBtn && pwdInput && authScreen && adminPanel) {
-      loginBtn.addEventListener("click", async () => {
-        const pwd = pwdInput.value;
-        if (!pwd) { showToast("Introduce la contraseña", "error"); return; }
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span>Verificando...</span>';
-        try {
-          const ok = await verifyPassword(pwd);
-          if (ok) {
-            authScreen.style.display = "none";
-            adminPanel.style.display = "block";
-            const items = await loadGallery();
-            renderAdminList(items);
-            const dateInput = document.getElementById("date-input");
-            if (dateInput) dateInput.value = new Date().toISOString().split("T")[0];
-            const savedAuthor = localStorage.getItem("th_author");
-            const authorSelect = document.getElementById("author-input");
-            if (savedAuthor && authorSelect) authorSelect.value = savedAuthor;
-            showToast("Acceso concedido");
-          } else {
-            showToast("Contraseña incorrecta", "error");
-            pwdInput.value = "";
-          }
-        } catch (err) {
-          console.error("Login error:", err);
-          showToast("Error al verificar: " + err.message, "error");
-        } finally {
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = '<span>Entrar</span>';
-        }
-      });
-
-      // Allow Enter key in password field
-      pwdInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") loginBtn.click();
-      });
-    }
-
-    // Logout
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        authScreen.style.display = "block";
-        adminPanel.style.display = "none";
-        pwdInput.value = "";
-      });
-    }
-
-    // Author dropdown custom input toggle
-    const authorSelect = document.getElementById("author-input");
-    const authorCustom = document.getElementById("author-custom");
-    if (authorSelect && authorCustom) {
-      authorSelect.addEventListener("change", () => {
-        authorCustom.style.display = authorSelect.value === "custom" ? "block" : "none";
-        if (authorSelect.value !== "custom") authorCustom.value = "";
-      });
-    }
-
-    // Drop zone event listeners
-    const dropZone = document.getElementById("drop-zone");
-    const fileInput = document.getElementById("file-input");
-    const preview = document.getElementById("preview");
-    window.pendingFiles = window.pendingFiles || [];
-
-    function addFiles(files) {
-      for (const file of files) {
-        if (file.size > 10 * 1024 * 1024) {
-          showToast(file.name + ": demasiado grande (max 10MB)", "error");
-          continue;
-        }
-        // Check for duplicates
-        const isDup = window.pendingFiles.some(f => f.name === file.name && f.size === file.size);
-        if (isDup) continue;
-        window.pendingFiles.push(file);
-        renderPreview(file);
+async function loadGallery() {
+  let items = [];
+  try {
+    const local = localStorage.getItem(STORAGE_KEY);
+    if (local) items = JSON.parse(local);
+  } catch (e) {}
+  try {
+    const { data, error } = await supabase
+      .from('gallery_items')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data) {
+      const localMap = new Map(items.map(i => [i.slug, i]));
+      for (const s of data) {
+        if (!localMap.has(s.slug)) items.push(s);
       }
     }
+  } catch (e) {}
+  items.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return items;
+}
 
-    function renderPreview(file) {
-      const div = document.createElement("div");
-      div.className = "preview-item";
-      div.dataset.name = file.name;
-      const url = URL.createObjectURL(file);
-      const isVideo = file.type.startsWith("video/");
-      div.innerHTML = (isVideo 
-        ? '<video src="' + url + '" muted playsinline></video>' 
-        : '<img src="' + url + '" alt="">') + 
-        '<button type="button" onclick="removePreview(\'" + file.name + "\')">×</button>';
-      if (preview) preview.appendChild(div);
-    }
+function saveGallery(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
 
-    window.removePreview = function(name) {
-      window.pendingFiles = window.pendingFiles.filter(f => f.name !== name);
-      const el = preview?.querySelector('[data-name="' + name + '"]');
-      if (el) {
-        const media = el.querySelector("img,video");
-        if (media) URL.revokeObjectURL(media.src);
-        el.remove();
-      }
-    };
-
-    if (dropZone && fileInput && preview) {
-      ["dragenter", "dragover"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag"); }));
-      ["dragleave", "drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag"); }));
-      dropZone.addEventListener("drop", e => { addFiles(Array.from(e.dataTransfer.files)); });
-      dropZone.addEventListener("click", () => fileInput.click());
-      fileInput.addEventListener("change", e => { addFiles(Array.from(e.target.files)); fileInput.value = ""; });
-    }
-
-    // Upload form
-    const uploadForm = document.getElementById("upload-form");
-    if (uploadForm) {
-      uploadForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const authorSelect = document.getElementById("author-input");
-        const authorCustom = document.getElementById("author-custom");
-        let author = authorSelect ? authorSelect.value : "";
-        if (author === "custom") {
-          author = authorCustom ? authorCustom.value.trim() : "";
-        }
-        author = author || "Anónimo";
-        if (authorSelect) localStorage.setItem("th_author", author);
-
-        const captionInput = document.getElementById("caption-input");
-        const caption = captionInput ? captionInput.value.trim() : "";
-        const dateInput = document.getElementById("date-input");
-        const date = dateInput ? (dateInput.value || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
-
-        // Get pending files from drop zone (we need to track them)
-        // For simplicity, we'll handle files via the drop zone logic already in place
-        // but we need to actually process the pending files here
-        // The pendingFiles array is defined in the drop zone section
-        if (window.pendingFiles && window.pendingFiles.length > 0) {
-          const items = await loadGallery();
-          for (const file of window.pendingFiles) {
-            const isVideo = file.type.startsWith("video/");
-            const base64 = await fileToBase64(file);
-            const slug = date + "-" + file.name.replace(/[^a-z0-9.]/gi, "-").toLowerCase() + "-" + Date.now();
-            items.push({
-              slug,
-              title: caption || file.name.replace(/\.[^.]+$/, ""),
-              author,
-              date,
-              displayDate: new Date(date).toLocaleDateString("es-ES"),
-              url: base64,
-              isVideo,
-              caption
-            });
-          }
-          saveGallery(items);
-          renderAdminList(items);
-          window.pendingFiles = [];
-          const preview = document.getElementById("preview");
-          if (preview) preview.innerHTML = "";
-          if (captionInput) captionInput.value = "";
-          showToast(window.pendingFiles.length + " archivo(s) guardado(s) localmente");
-        } else {
-          showToast("Añade al menos un archivo", "error");
-        }
-      });
-    }
-
-    // Export JSON
-    const exportBtn = document.getElementById("export-json");
-    if (exportBtn) {
-      exportBtn.addEventListener("click", async () => {
-        const items = await loadGallery();
-        const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
-        const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "gallery.json";
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast("gallery.json descargado");
-      });
-    }
-
-    // Clear localStorage
-    const clearBtn = document.getElementById("clear-local");
-    if (clearBtn) {
-      clearBtn.addEventListener("click", () => {
-        if (confirm("¿Borrar TODOS los datos locales? (No afecta al JSON estático)")) {
-          localStorage.removeItem(STORAGE_KEY);
-          renderAdminList([]);
-          showToast("localStorage limpiado");
-        }
-      });
-    }
-
-    // Load initial gallery list
-    loadGallery().then(renderAdminList);
-
-    // Init particles
-    if (window.initParticles) window.initParticles();
+function renderAdminList(items) {
+  const el = document.getElementById("gallery-list");
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state">No hay entradas aún. Añade la primera arriba.</div>';
+    return;
   }
+  el.innerHTML = items.map(item => {
+    const isVideo = item.url && item.url.match(/\.(mp4|webm|mov)$/i);
+    const media = isVideo
+      ? '<video src="' + item.url + '" muted playsinline></video>'
+      : '<img src="' + item.url + '" alt="' + item.title + '">';
+    const videoLabel = isVideo ? "• 🎬 Video" : "• 🖼️ Imagen";
+    const displayDate = item.displayDate || item.date;
+    return (
+      '<div class="gallery-item" data-slug="' + item.slug + '">' +
+      media +
+      '<div class="info">' +
+      '<div class="title">' + item.title + '</div>' +
+      '<div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div>' +
+      '</div>' +
+      '<div class="actions"><button onclick="deleteItem(\'" + item.slug + "\')">Eliminar</button></div>' +
+      '</div>'
+    );
+  }).join("");
+}
 
-  // Wait for DOM
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+window.deleteItem = async function(slug) {
+  if (!confirm("¿Eliminar esta entrada?")) return;
+  // Delete from Supabase if it has an id
+  const { data: item } = await supabase.from('gallery_items').select('id').eq('slug', slug).single();
+  if (item?.id) {
+    await supabase.from('gallery_items').delete().eq('id', item.id);
+    // Also delete file from storage
+    const { data: files } = await supabase.storage.from('gallery').list('', { search: slug });
+    if (files?.length) await supabase.storage.from('gallery').remove(files.map(f => f.name));
+  }
+  // Local
+  const items = await loadGallery();
+  const filtered = items.filter(i => i.slug !== slug);
+  saveGallery(filtered);
+  renderAdminList(filtered);
+  showToast("Entrada eliminada");
+};
+
+async function init() {
+  // Auth check
+  const { data: { session } } = await supabase.auth.getSession();
+  const authScreen = document.getElementById("auth-screen");
+  const adminPanel = document.getElementById("admin-panel");
+  const loginBtn = document.getElementById("login-btn");
+  const pwdInput = document.getElementById("pwd-input");
+
+  if (session) {
+    authScreen.style.display = "none";
+    adminPanel.style.display = "block";
+    loadAndRender();
   } else {
-    init();
+    authScreen.style.display = "block";
+    adminPanel.style.display = "none";
   }
 
-  // Global helpers
-  window.showToast = showToast;
-  window.verifyPassword = verifyPassword;
-  window.loadGallery = loadGallery;
-  window.saveGallery = saveGallery;
-  window.renderAdminList = renderAdminList;
-
-  // fileToBase64 helper
-  window.fileToBase64 = function(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+  // Login handler
+  if (loginBtn && pwdInput && authScreen && adminPanel) {
+    loginBtn.addEventListener("click", async () => {
+      const email = "admin@toca-hierbas.com";
+      const password = pwdInput.value;
+      if (!password) { showToast("Introduce la contraseña", "error"); return; }
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span>Verificando...</span>';
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        authScreen.style.display = "none";
+        adminPanel.style.display = "block";
+        pwdInput.value = "";
+        showToast("Acceso concedido");
+        loadAndRender();
+      } catch (err) {
+        console.error("Login error:", err);
+        showToast("Error: " + err.message, "error");
+        pwdInput.value = "";
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<span>Entrar</span>';
+      }
     });
+    pwdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
+  }
+
+  // Logout
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      authScreen.style.display = "block";
+      adminPanel.style.display = "none";
+    });
+  }
+
+  // Author dropdown
+  const authorSelect = document.getElementById("author-input");
+  const authorCustom = document.getElementById("author-custom");
+  if (authorSelect && authorCustom) {
+    authorSelect.addEventListener("change", () => {
+      authorCustom.style.display = authorSelect.value === "custom" ? "block" : "none";
+      if (authorSelect.value !== "custom") authorCustom.value = "";
+    });
+  }
+
+  // Drop zone
+  const dropZone = document.getElementById("drop-zone");
+  const fileInput = document.getElementById("file-input");
+  const preview = document.getElementById("preview");
+  window.pendingFiles = window.pendingFiles || [];
+
+  function addFiles(files) {
+    for (const file of files) {
+      if (file.size > 50 * 1024 * 1024) {
+        showToast(file.name + ": demasiado grande (max 50MB)", "error");
+        continue;
+      }
+      const isDup = window.pendingFiles.some(f => f.name === file.name && f.size === file.size);
+      if (isDup) continue;
+      window.pendingFiles.push(file);
+      renderPreview(file);
+    }
+  }
+
+  function renderPreview(file) {
+    const div = document.createElement("div");
+    div.className = "preview-item";
+    div.dataset.name = file.name;
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith("video/");
+    div.innerHTML = (isVideo
+      ? '<video src="' + url + '" muted playsinline></video>'
+      : '<img src="' + url + '" alt="">') +
+      '<button type="button" onclick="removePreview(\'" + file.name + "\')">×</button>';
+    if (preview) preview.appendChild(div);
+  }
+
+  window.removePreview = function(name) {
+    window.pendingFiles = window.pendingFiles.filter(f => f.name !== name);
+    const el = preview?.querySelector('[data-name="' + name + '"]');
+    if (el) {
+      const media = el.querySelector("img,video");
+      if (media) URL.revokeObjectURL(media.src);
+      el.remove();
+    }
   };
 
-  // Pending files array (used by drop zone)
-  window.pendingFiles = [];
-})();
+  if (dropZone && fileInput && preview) {
+    ["dragenter", "dragover"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag"); }));
+    ["dragleave", "drop"].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag"); }));
+    dropZone.addEventListener("drop", e => { addFiles(Array.from(e.dataTransfer.files)); });
+    dropZone.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", e => { addFiles(Array.from(e.target.files)); fileInput.value = ""; });
+  }
+
+  // Upload form - direct to Supabase
+  const uploadForm = document.getElementById("upload-form");
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!window.pendingFiles?.length) { showToast("Añade al menos un archivo", "error"); return; }
+
+      const authorSelect = document.getElementById("author-input");
+      const authorCustom = document.getElementById("author-custom");
+      let author = authorSelect ? authorSelect.value : "";
+      if (author === "custom") author = authorCustom ? authorCustom.value.trim() : "";
+      author = author || "Anónimo";
+      if (authorSelect) localStorage.setItem("th_author", author);
+
+      const captionInput = document.getElementById("caption-input");
+      const caption = captionInput ? captionInput.value.trim() : "";
+      const dateInput = document.getElementById("date-input");
+      const date = dateInput ? (dateInput.value || new Date().toISOString().split("T")[0]) : new Date().toISOString().split("T")[0];
+
+      const submitBtn = uploadForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Subiendo...</span>';
+
+      try {
+        const items = await loadGallery();
+        let uploaded = 0;
+
+        for (const file of window.pendingFiles) {
+          const isVideo = file.type.startsWith("video/");
+          const timestamp = Date.now();
+          const cleanName = file.name.replace(/[^a-z0-9.]/gi, "-").toLowerCase();
+          const storagePath = date + "-" + cleanName + "-" + timestamp;
+          const slug = storagePath;
+
+          // Upload to Supabase Storage
+          const { error: uploadError } = await supabase.storage
+            .from('gallery')
+            .upload(storagePath, file, { cacheControl: '3600', upsert: false });
+          if (uploadError) throw uploadError;
+
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(storagePath);
+
+          // Insert into gallery_items table
+          const { error: dbError } = await supabase.from('gallery_items').insert({
+            slug,
+            title: caption || file.name.replace(/\.[^.]+$/, ""),
+            author,
+            date,
+            displayDate: new Date(date).toLocaleDateString("es-ES"),
+            url: publicUrl,
+            is_video: isVideo,
+            caption,
+            created_at: new Date().toISOString()
+          });
+          if (dbError) throw dbError;
+
+          items.push({
+            slug,
+            title: caption || file.name.replace(/\.[^.]+$/, ""),
+            author,
+            date,
+            displayDate: new Date(date).toLocaleDateString("es-ES"),
+            url: publicUrl,
+            isVideo,
+            caption
+          });
+          uploaded++;
+        }
+
+        saveGallery(items);
+        renderAdminList(items);
+        window.pendingFiles = [];
+        if (preview) preview.innerHTML = "";
+        if (captionInput) captionInput.value = "";
+        showToast(uploaded + " archivo(s) subido(s) y público(s) al instante");
+      } catch (err) {
+        console.error("Upload error:", err);
+        showToast("Error subiendo: " + err.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>💾 Guardar en galería</span>';
+      }
+    });
+  }
+
+  // Export JSON
+  const exportBtn = document.getElementById("export-json");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", async () => {
+      const items = await loadGallery();
+      const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
+      const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gallery.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("gallery.json descargado");
+    });
+  }
+
+  // Clear localStorage
+  const clearBtn = document.getElementById("clear-local");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (confirm("¿Borrar TODOS los datos locales? (No afecta a Supabase)")) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderAdminList([]);
+        showToast("localStorage limpiado");
+      }
+    });
+  }
+
+  async function loadAndRender() {
+    const items = await loadGallery();
+    renderAdminList(items);
+  }
+
+  // Init particles
+  if (window.initParticles) window.initParticles();
+
+  // Real-time subscription for gallery updates
+  supabase
+    .channel('gallery-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_items' }, async () => {
+      const items = await loadGallery();
+      renderAdminList(items);
+    })
+    .subscribe();
+}
+
+function showToast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); }, 3000);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
