@@ -290,30 +290,60 @@ async function init() {
     adminPanel.style.display = "none";
   }
 
-  // Login handler
+  // Login handler - try Supabase first, fallback to local SHA-256
   if (loginBtn && pwdInput && authScreen && adminPanel) {
     loginBtn.addEventListener("click", async () => {
-      const email = "admin@toca-hierbas.com";
       const password = pwdInput.value;
       if (!password) { showToast("Introduce la contraseña", "error"); return; }
       loginBtn.disabled = true;
       loginBtn.innerHTML = '<span>Verificando...</span>';
+      
+      let success = false;
+      
+      // Try Supabase auth first
       try {
+        const email = "admin@toca-hierbas.com";
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (!error) {
+          success = true;
+          console.log("Supabase auth OK");
+        } else {
+          console.warn("Supabase auth failed:", error.message);
+        }
+      } catch (err) {
+        console.warn("Supabase auth exception:", err.message);
+      }
+      
+      // Fallback: local SHA-256 verification
+      if (!success) {
+        try {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(password);
+          const hash = await crypto.subtle.digest("SHA-256", data);
+          const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+          const EXPECTED_HASH = "1f9c578e8f663ef2ea7597d34da6bc5cf25ca5a040c0d6dd3506dc7965188e22";
+          if (hex === EXPECTED_HASH) {
+            success = true;
+            console.log("Local fallback auth OK");
+          }
+        } catch (e) {
+          console.error("Local auth error:", e);
+        }
+      }
+      
+      if (success) {
         authScreen.style.display = "none";
         adminPanel.style.display = "block";
         pwdInput.value = "";
         showToast("Acceso concedido");
         loadAndRender();
-      } catch (err) {
-        console.error("Login error:", err);
-        showToast("Error: " + err.message, "error");
+      } else {
+        showToast("Contraseña incorrecta", "error");
         pwdInput.value = "";
-      } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<span>Entrar</span>';
       }
+      
+      loginBtn.disabled = false;
+      loginBtn.innerHTML = '<span>Entrar</span>';
     });
     pwdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
   }
