@@ -93,7 +93,7 @@
     <div class="input-group">
       <label for="pwd-input">Contraseña</label>
       <input type="password" id="pwd-input" placeholder="••••••••" autocomplete="current-password">
-      <button class="btn" id="login-btn"><span>Entrar</span></button>
+      <button type="button" class="btn" id="login-btn"><span>Entrar</span></button>
     </div>
     <p style="margin-top:16px;font-size:0.8rem;color:var(--text-dim);">La contraseña se verifica en el navegador. No se envía a ningún servidor.</p>
   </div>
@@ -101,7 +101,7 @@
   <div class="admin-panel" id="admin-panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
       <h2>📸 Gestor de Galería</h2>
-      <button class="logout-btn" id="logout-btn">Cerrar sesión</button>
+      <button type="button" class="logout-btn" id="logout-btn">Cerrar sesión</button>
     </div>
 
     <form class="upload-form" id="upload-form">
@@ -137,8 +137,8 @@
     <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
       <h3 style="margin:0 0 12px;font-size:1rem;">🔧 Herramientas</h3>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn" id="export-json" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>📥 Descargar gallery.json</span></button>
-        <button class="btn" id="clear-local" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>🗑️ Limpiar localStorage</span></button>
+        <button type="button" class="btn" id="export-json" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>📥 Descargar gallery.json</span></button>
+        <button type="button" class="btn" id="clear-local" style="background:var(--surface);color:var(--text);border:1px solid var(--border);"><span>🗑️ Limpiar localStorage</span></button>
       </div>
       <p style="margin-top:12px;font-size:0.8rem;color:var(--text-dim);">El JSON descargado puedes commitearlo manualmente al repo en <code>public/gallery.json</code> para que persista en producción.</p>
     </div>
@@ -341,18 +341,32 @@ document.getElementById("clear-local").addEventListener("click", () => {
 });
 
 document.getElementById("login-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("login-btn");
   const pwd = document.getElementById("pwd-input").value;
-  if (await verifyPassword(pwd)) {
-    document.getElementById("auth-screen").style.display = "none";
-    document.getElementById("admin-panel").style.display = "block";
-    const items = await loadGallery();
-    renderAdminList(items);
-    document.getElementById("date-input").value = new Date().toISOString().split("T")[0];
-    const savedAuthor = localStorage.getItem("th_author");
-    if (savedAuthor) document.getElementById("author-input").value = savedAuthor;
-  } else {
-    showToast("Contraseña incorrecta", "error");
-    document.getElementById("pwd-input").value = "";
+  if (!pwd) { showToast("Introduce la contraseña", "error"); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span>Verificando...</span>';
+  try {
+    const ok = await verifyPassword(pwd);
+    if (ok) {
+      document.getElementById("auth-screen").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+      const items = await loadGallery();
+      renderAdminList(items);
+      document.getElementById("date-input").value = new Date().toISOString().split("T")[0];
+      const savedAuthor = localStorage.getItem("th_author");
+      if (savedAuthor) document.getElementById("author-input").value = savedAuthor;
+      showToast("Acceso concedido");
+    } else {
+      showToast("Contraseña incorrecta", "error");
+      document.getElementById("pwd-input").value = "";
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    showToast("Error al verificar: " + err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Entrar</span>';
   }
 });
 
