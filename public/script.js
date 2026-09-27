@@ -2,6 +2,157 @@
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+// WebGL Background
+window.initWebGLBackground = function() {
+  const canvas = document.getElementById('webgl-canvas');
+  if (!canvas) return;
+  
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0f1210, 0.0005);
+  
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+  
+  // Create glowing particles
+  const particlesGeometry = new THREE.BufferGeometry();
+  const particlesCount = 150;
+  
+  const posArray = new Float32Array(particlesCount * 3);
+  const scaleArray = new Float32Array(particlesCount);
+  
+  for (let i = 0; i < particlesCount * 3; i++) {
+    posArray[i] = (Math.random() - 0.5) * 10;
+  }
+  
+  for (let i = 0; i < particlesCount; i++) {
+    scaleArray[i] = Math.random();
+  }
+  
+  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1));
+  
+  const particlesMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    vertexShader: `
+      attribute float aScale;
+      varying float vScale;
+      void main() {
+        vScale = aScale;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = (30.0 * vScale) / -mvPosition.z;
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      varying float vScale;
+      void main() {
+        float distance = length(gl_PointCoord - vec2(0.5));
+        float alpha = smoothstep(0.5, 0.0, distance) * vScale;
+        if (alpha <= 0.0) discard;
+        gl_FragColor = vec4(0.54, 0.67, 0.36, alpha * 0.6);
+      }
+    `,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  
+  const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+  scene.add(particlesMesh);
+  
+  // Create floating leaf shapes
+  const leafCount = 8;
+  const leafGeometry = new THREE.BufferGeometry();
+  const leafPositions = new Float32Array(leafCount * 3);
+  const leafScales = new Float32Array(leafCount);
+  const leafRotations = new Float32Array(leafCount);
+  
+  for (let i = 0; i < leafCount * 3; i++) {
+    leafPositions[i] = (Math.random() - 0.5) * 8;
+  }
+  
+  for (let i = 0; i < leafCount; i++) {
+    leafScales[i] = 0.5 + Math.random() * 1.5;
+    leafRotations[i] = Math.random() * Math.PI * 2;
+  }
+  
+  leafGeometry.setAttribute('position', new THREE.BufferAttribute(leafPositions, 3));
+  leafGeometry.setAttribute('aScale', new THREE.BufferAttribute(leafScales, 1));
+  leafGeometry.setAttribute('aRotation', new THREE.BufferAttribute(leafRotations, 1));
+  
+  const leafMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    vertexShader: `
+      attribute float aScale;
+      attribute float aRotation;
+      varying float vScale;
+      varying float vRotation;
+      void main() {
+        vScale = aScale;
+        vRotation = aRotation;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      varying float vScale;
+      varying float vRotation;
+      void main() {
+        vec2 uv = gl_PointCoord - vec2(0.5);
+        float angle = vRotation;
+        float cosA = cos(angle);
+        float sinA = sin(angle);
+        vec2 rotatedUV = vec2(
+          uv.x * cosA - uv.y * sinA,
+          uv.x * sinA + uv.y * cosA
+        );
+        
+        float leaf = smoothstep(0.15, 0.0, 
+          length(rotatedUV) * 2.0 * vScale
+        );
+        leaf *= smoothstep(0.0, 0.1, abs(rotatedUV.x) * 2.0 * vScale);
+        leaf *= smoothstep(0.0, 0.1, abs(rotatedUV.y) * 2.0 * vScale);
+        
+        if (leaf <= 0.0) discard;
+        gl_FragColor = vec4(0.54, 0.67, 0.36, leaf * 0.3);
+      }
+    `,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  
+  const leafMesh = new THREE.Points(leafGeometry, leafMaterial);
+  scene.add(leafMesh);
+  
+  // Animation
+  const clock = new THREE.Clock();
+  
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    const elapsedTime = clock.getElapsedTime();
+    
+    // Rotate particles slowly
+    particlesMesh.rotation.y = elapsedTime * 0.1;
+    leafMesh.rotation.y = elapsedTime * 0.05;
+    
+    // Update material time uniforms if needed
+    renderer.render(scene, camera);
+  }
+  
+  animate();
+  
+  // Handle resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+};
+
 // Nav scroll effect
 const navEl = document.querySelector('nav.wrap');
 if (navEl) {
@@ -141,4 +292,17 @@ if (gameArea) {
   }
 
   startBtn.addEventListener('click', startGame);
+}
+
+// Initialize WebGL background after Three.js loads
+if (typeof THREE !== 'undefined') {
+  initWebGLBackground();
+} else {
+  // Load Three.js dynamically if not already loaded
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js';
+  script.onload = () => {
+    initWebGLBackground();
+  };
+  document.head.appendChild(script);
 }

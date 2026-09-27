@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "slug": "primer-evento",
+    "title": "Noche de Juegos Retro",
+    "date": "25/9/2026",
+    "image": "https://i.imgur.com/retro-gaming.jpg",
+    "description": "¡Una noche épica llena de clásicos! Desde Super Mario hasta Street Fighter, revivimos los mejores momentos de los videojuegos retro. Hubo torneos de Pac-Man, competencias de Tetris y hasta un concurso de cosplay donde todos mostraron su amor por los píxeles dorados.\n\nLos ganadores recibieron premios simbólicos pero sobre todo, mucho reconocimiento de la comunidad. Fue una excelente oportunidad para conectar con jugadores de todas las edades y compartir nuestra pasión por los juegos que marcaron una época.\n\nPróximamente tendremos más eventos temáticos, así que mantente atento a los anuncios en nuestro Discord.",
+    "rawDate": "2026-09-25"
+  },
+  {
+    "slug": "valorant-torneo",
+    "title": "Torneo de Valorant",
+    "date": "20/9/2026",
+    "image": "https://i.imgur.com/valorant-tournament.jpg",
+    "description": "Este fin de semana organizamos nuestro primer torneo interno de Valorant con 16 equipos compitiendo por la gloria eterna (y algunos premios simbólicos bastante cool).\n\nLos partidos fueron intensos, con jugadas increíbles y momentos de tensión que mantuvieron a todos al borde de sus sillas. La final fue particularmente emocionante, yendo a tiempo extra antes de que el equipo \"HierbasVictory\" se alzara con el triunfo.\n\nAdemás de la competencia, hubo mucho compañerismo, estrategias compartidas y risas en los canales de voz. Ya estamos planeando el próximo torneo, posiblemente con un formato de doble eliminación para dar más oportunidades a todos los participantes.\n\n¡Gracias a todos por participar y hacer de este evento un éxito!",
+    "rawDate": "2026-09-20"
+  }
+]

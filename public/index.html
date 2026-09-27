@@ -9,20 +9,21 @@
 <meta property="og:title" content="Toca Hierbas · Discord" />
 <meta property="og:description" content="Comunidad gamer en español. Partidas todos los días, voz activa y cero dramas." />
 <meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 12.5 9 9.2C7.6 7.7 5.9 6.8 5.1 6.8C5.1 6.8 5.4 10.2 7.4 12.5C9.4 14.8 12.2 15.4 12.2 19Z' fill='%238aab5c'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 11.3 15.2 8.5C16.6 7.2 18.3 6.5 19.1 6.5C19.1 6.5 18.8 10.1 16.8 12.5C14.7 14.9 12.2 15.6 12.2 19Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="bg-atmosphere" aria-hidden="true"></div>
+<canvas id="webgl-canvas" aria-hidden="true"></canvas>
 <div class="particles" aria-hidden="true" id="particles"></div>
 <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
-<nav class="wrap">
+<nav class="wrap" id="nav">
   <a href="index.html" class="wordmark">
     <svg class="leaf-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/>
@@ -69,81 +70,102 @@
   </div>
 
   <div class="hero-preview reveal up" id="hero-preview">
-    <div class="preview-card">
-      <span class="preview-tag">💬 #general</span>
-      <div class="preview-msg"><strong>carlangs</strong> mira qué capture</div>
-      <div class="preview-msg"><strong>hierbero</strong> jajajaja</div>
-      <div class="preview-msg"><strong>hotweels_mechanic</strong> 💀</div>
+      <div class="preview-card">
+        <span class="preview-tag">💬 #general</span>
+        <div class="preview-msg"><strong>carlangs</strong> mira qué capture</div>
+        <div class="preview-msg"><strong>hierbero</strong> jajajaja</div>
+        <div class="preview-msg"><strong>hotweels_mechanic</strong> 💀</div>
+      </div>
+      <div class="preview-card">
+        <span class="preview-tag">🎮 #busco-partida</span>
+        <div class="preview-msg"><strong>usuario_123</strong> ¿Alguien para Valorant?</div>
+        <div class="preview-msg"><strong>pepe</strong> Yo bajo en 5 min</div>
+      </div>
+      <div class="preview-card">
+        <span class="preview-tag">🎨 #memes</span>
+        <div class="preview-msg"><strong>bAd_KeFir</strong> *sube meme de Dead Space*</div>
+        <div class="preview-msg"><strong>THB</strong> THB</div>
+      </div>
     </div>
-    <div class="preview-card">
-      <span class="preview-tag">🎮 #busco-partida</span>
-      <div class="preview-msg"><strong>usuario_123</strong> ¿Alguien para Valorant?</div>
-      <div class="preview-msg"><strong>pepe</strong> Yo bajo en 5 min</div>
+  </header>
+
+  <section class="wrap reveal up" id="features">
+    <h2>Qué te espera dentro</h2>
+    <div class="features-grid">
+      <article class="feature-card reveal left">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 0 12 0v-5"/></svg>
+        </div>
+        <h3>Partidas cada día</h3>
+        <p>Siempre hay gente conectada. Valorant, LoL, CS, indie, lo que surja. Preguntas y te unes.</p>
+      </article>
+      <article class="feature-card reveal up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 18c0-2.5-2-5-4.5-5S8 15.5 8 18"/><path d="M12 4v16"/><circle cx="12" cy="9" r="2"/></svg>
+        </div>
+        <h3>Voz de verdad</h3>
+        <p>Canales de voz poblados, no cementerios. Gente charlando, riéndose, rageando, pasando el rato.</p>
+      </article>
+      <article class="feature-card reveal right">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M12 16v-4"/><path d="M8 12h8"/></svg>
+        </div>
+        <h3>Eventos & torneos</h3>
+        <p>Noches temáticas, 1v1s, torneos internos, maratones. Premios simbólicos, gloria eterna.</p>
+      </article>
+      <article class="feature-card reveal left">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-4a2 2 0 0 0-2-2h-4"/></svg>
+        </div>
+        <h3>Ambiente sano</h3>
+        <p>Moderación activa, reglas claras, gente normal. Sin toxicidad, sin edgelords, sin dramas.</p>
+      </article>
     </div>
-    <div class="preview-card">
-      <span class="preview-tag">🎨 #memes</span>
-      <div class="preview-msg"><strong>bAd_KeFir</strong> *sube meme de Dead Space*</div>
-      <div class="preview-msg"><strong>THB</strong> THB</div>
+  </section>
+
+  <section class="wrap" id="stats-section" aria-live="polite">
+    <div class="stat-display reveal scale">
+      <span class="stat-dot" aria-hidden="true"></span>
+      <span class="stat-num" id="stat-online">—</span>
+      <span class="stat-label">jugadores conectados en este momento</span>
     </div>
-  </div>
-</header>
+  </section>
 
-<section class="wrap reveal up">
-  <h2>Qué te espera dentro</h2>
-  <div class="list-row reveal left">
-    <div class="label">Partidas cada día</div>
-    <div class="desc">Siempre hay gente conectada. Valorant, LoL, CS, indie, lo que surja. Preguntas y te unes.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Voz de verdad</div>
-    <div class="desc">Canales de voz poblados, no cementerios. Gente charlando, riéndose, rageando, pasando el rato.</div>
-  </div>
-  <div class="list-row reveal left">
-    <div class="label">Eventos & torneos</div>
-    <div class="desc">Noches temáticas, 1v1s, torneos internos, maratones. Premios simbólicos, gloria eterna.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Ambiente sano</div>
-    <div class="desc">Moderación activa, reglas claras, gente normal. Sin toxicidad, sin edgelords, sin dramas.</div>
-  </div>
-</section>
-
-<section class="wrap" id="stats-section" style="display:none;">
-  <h2>Ahora mismo</h2>
-  <div class="stat-line">
-    <span class="stat-dot"></span>
-    <span class="stat-num" id="stat-online">—</span>
-    <span class="stat-label">jugadores conectados en este momento</span>
-  </div>
-</section>
-
-<section class="wrap reveal up">
-  <h2>La cara detrás del server</h2>
-  <div class="admin-row reveal left">
-    <div class="avatar">HM</div>
-    <div>
-      <div class="name">hotweels_mechanic</div>
-      <div class="role">Admin · @deadspace0131</div>
+  <section class="wrap reveal up" id="team">
+    <h2>La cara detrás del server</h2>
+    <div class="admin-row reveal left">
+      <div class="avatar" style="background: linear-gradient(135deg, #8aab5c, #a6c47c);">HM</div>
+      <div>
+        <div class="name">hotweels_mechanic</div>
+        <div class="role">Admin · @deadspace0131</div>
+      </div>
     </div>
-  </div>
-  <div class="admin-row reveal right">
-    <div class="avatar">HI</div>
-    <div>
-      <div class="name">hierbero</div>
-      <div class="role">Admin · @turbo_7zn</div>
+    <div class="admin-row reveal right">
+      <div class="avatar" style="background: linear-gradient(135deg, #a6c47c, #cf9a3d);">HI</div>
+      <div>
+        <div class="name">hierbero</div>
+        <div class="role">Admin · @turbo_7zn</div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="cta-final wrap reveal scale" style="border-top:none;">
-  <h2>Tu próxima partida empieza aquí.</h2>
-  <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse al servidor →</span></a>
-</section>
+  <section class="cta-final wrap reveal scale">
+    <h2>Tu próxima partida empieza aquí.</h2>
+    <a class="btn btn-primary" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse al servidor →</span></a>
+  </section>
 
-<footer class="wrap">
-  Toca Hierbas · <span id="year"></span> · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a>
-</footer>
+  <footer class="wrap">
+    Toca Hierbas · <span id="year"></span> · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a>
+  </footer>
 
-<script src="script.js"></script>
-</body>
-</html>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script src="script.js" type="module"></script>
+  </body>
+  </html>
