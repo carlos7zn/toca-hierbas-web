@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useInView } from 'framer-motion';
-import { cn } from '@/lib/utils';
+export const dynamic = 'force-dynamic';
+
+import HeroSection from '@/components/home/HeroSection';
+import FeaturesSection from '@/components/home/FeaturesSection'; 
+import CommunitySection from '@/components/home/CommunitySection';
 import { useRef } from 'react';
+import { useInView } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const ref = useRef(null);
