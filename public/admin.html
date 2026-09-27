@@ -86,16 +86,7 @@
 </header>
 
 <main class="wrap admin-container">
-  <div class="auth-form" id="auth-screen">
-    <h1>🔒 Acceso Restringido</h1>
-    <p>Introduce la contraseña para gestionar la galería</p>
-    <div class="input-group">
-      <label for="pwd-input">Contraseña</label>
-      <input type="password" id="pwd-input" placeholder="••••••••" autocomplete="current-password">
-      <button type="button" class="btn" id="login-btn"><span>Entrar</span></button>
-    </div>
-    <p style="margin-top:16px;font-size:0.8rem;color:var(--text-dim);">La contraseña se verifica en el navegador. No se envía a ningún servidor.</p>
-  </div>
+
 
   <div class="admin-panel" id="admin-panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
@@ -186,11 +177,9 @@
 <script src="script.js"></script>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
 const SUPABASE_URL = "https://ffiwqkvftwosybubnerh.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_t__IyaSL9g4v0HNNZjFk9Q_te0hZnos";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const STORAGE_KEY = "th_gallery";
 
 function showToast(msg, type = "success") {
@@ -208,10 +197,7 @@ async function loadGallery() {
     if (local) items = JSON.parse(local);
   } catch (e) {}
   try {
-    const { data, error } = await supabase
-      .from('gallery_items')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('gallery_items').select('*').order('created_at', { ascending: false });
     if (!error && data) {
       const localMap = new Map(items.map(i => [i.slug, i]));
       for (const s of data) {
@@ -235,22 +221,11 @@ function renderAdminList(items) {
     return;
   }
   el.innerHTML = items.map(item => {
-    const isVideo = item.url && item.url.match(/\.(mp4|webm|mov)$/i);
-    const media = isVideo
-      ? '<video src="' + item.url + '" muted playsinline></video>'
-      : '<img src="' + item.url + '" alt="' + item.title + '">';
+    const isVideo = item.url && item.url.match(/(mp4|webm|mov)$/i);
+    const media = isVideo ? '<video src="' + item.url + '" muted playsinline></video>' : '<img src="' + item.url + '" alt="' + item.title + '">';
     const videoLabel = isVideo ? "• 🎬 Video" : "• 🖼️ Imagen";
     const displayDate = item.displayDate || item.date;
-    return (
-      '<div class="gallery-item" data-slug="' + item.slug + '">' +
-      media +
-      '<div class="info">' +
-      '<div class="title">' + item.title + '</div>' +
-      '<div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div>' +
-      '</div>' +
-      '<div class="actions"><button onclick="deleteItem('' + item.slug + '')">Eliminar</button></div>' +
-      '</div>'
-    );
+    return '<div class="gallery-item" data-slug="' + item.slug + '">' + media + '<div class="info"><div class="title">' + item.title + '</div><div class="meta">👤 ' + item.author + ' • 📅 ' + displayDate + ' ' + videoLabel + '</div></div><div class="actions"><button onclick="deleteItem('' + item.slug + '')">Eliminar</button></div></div>';
   }).join("");
 }
 
@@ -269,67 +244,18 @@ window.deleteItem = async function(slug) {
   showToast("Entrada eliminada");
 };
 
-async function loadAndRender() {
+async function init() {
+  document.getElementById("admin-panel").style.display = "block";
   const items = await loadGallery();
   renderAdminList(items);
-}
-
-async function init() {
-  // Skip auth, go directly to admin panel
-  const authScreen = document.getElementById("auth-screen");
-  const adminPanel = document.getElementById("admin-panel");
-  if (authScreen) authScreen.style.display = "none";
-  if (adminPanel) adminPanel.style.display = "block";
-  await loadAndRender();
-  // Init particles
   if (window.initParticles) window.initParticles();
-  // Real-time subscription for gallery updates
-  supabase
-    .channel('gallery-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_items' }, async () => {
-      const items = await loadGallery();
-      renderAdminList(items);
-    })
-    .subscribe();
-}
-
-// Export JSON
-const exportBtn = document.getElementById("export-json");
-if (exportBtn) {
-  exportBtn.addEventListener("click", async () => {
+  supabase.channel('gallery-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_items' }, async () => {
     const items = await loadGallery();
-    const clean = items.map(({slug, title, author, date, displayDate, url, isVideo, caption}) => ({slug, title, author, date, displayDate, url, isVideo, caption}));
-    const blob = new Blob([JSON.stringify(clean, null, 2)], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "gallery.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast("gallery.json descargado");
-  });
+    renderAdminList(items);
+  }).subscribe();
 }
 
-// Clear localStorage
-const clearBtn = document.getElementById("clear-local");
-if (clearBtn) {
-  clearBtn.addEventListener("click", () => {
-    if (confirm("¿Borrar TODOS los datos locales? (No afecta a Supabase)")) {
-      localStorage.removeItem(STORAGE_KEY);
-      renderAdminList([]);
-      showToast("localStorage limpiado");
-    }
-  });
-}
-
-// Init particles
-if (window.initParticles) window.initParticles();
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
+document.addEventListener("DOMContentLoaded", init);
 </script>
 
 function showToast(msg, type = "success") {
