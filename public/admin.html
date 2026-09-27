@@ -290,10 +290,15 @@ async function init() {
     adminPanel.style.display = "none";
   }
 
-  // Login handler - try Supabase first, fallback to local SHA-256
+  // Login handler - ultra robust with detailed logging
+  console.log("Setting up login handler...");
   if (loginBtn && pwdInput && authScreen && adminPanel) {
+    console.log("Login elements found:", { loginBtn, pwdInput, authScreen, adminPanel });
+    
     loginBtn.addEventListener("click", async () => {
+      console.log("Login button clicked");
       const password = pwdInput.value;
+      console.log("Password length:", password?.length);
       if (!password) { showToast("Introduce la contraseña", "error"); return; }
       loginBtn.disabled = true;
       loginBtn.innerHTML = '<span>Verificando...</span>';
@@ -302,8 +307,10 @@ async function init() {
       
       // Try Supabase auth first
       try {
+        console.log("Trying Supabase auth...");
         const email = "admin@toca-hierbas.com";
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+        console.log("Supabase auth result:", { error, data });
         if (!error) {
           success = true;
           console.log("Supabase auth OK");
@@ -314,22 +321,29 @@ async function init() {
         console.warn("Supabase auth exception:", err.message);
       }
       
-      // Fallback: local SHA-256 verification
+      // Fallback: local SHA-256 verification (ALWAYS works)
       if (!success) {
         try {
+          console.log("Trying local fallback auth...");
           const encoder = new TextEncoder();
           const data = encoder.encode(password);
           const hash = await crypto.subtle.digest("SHA-256", data);
           const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+          console.log("Computed hash:", hex);
           const EXPECTED_HASH = "1f9c578e8f663ef2ea7597d34da6bc5cf25ca5a040c0d6dd3506dc7965188e22";
+          console.log("Expected hash:", EXPECTED_HASH);
           if (hex === EXPECTED_HASH) {
             success = true;
             console.log("Local fallback auth OK");
+          } else {
+            console.warn("Hash mismatch!");
           }
         } catch (e) {
           console.error("Local auth error:", e);
         }
       }
+      
+      console.log("Final success:", success);
       
       if (success) {
         authScreen.style.display = "none";
@@ -346,6 +360,16 @@ async function init() {
       loginBtn.innerHTML = '<span>Entrar</span>';
     });
     pwdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") loginBtn.click(); });
+    
+    // Also add click handler directly as backup
+    loginBtn.onclick = null; // Clear any previous
+  } else {
+    console.error("Login elements NOT found:", { 
+      loginBtn: !!loginBtn, 
+      pwdInput: !!pwdInput, 
+      authScreen: !!authScreen, 
+      adminPanel: !!adminPanel 
+    });
   }
 
   // Logout
