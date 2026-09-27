@@ -49,9 +49,6 @@
   <div class="gallery-grid" id="gallery-grid">
     <!-- Items se inyectan aquí via JS -->
   </div>
-  <div style="text-align:center;margin-top:32px;">
-    <a href="admin.html" class="btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);"><span>🔒 Gestionar galería</span></a>
-  </div>
 </section>
 
 <footer class="wrap">
@@ -93,7 +90,7 @@ async function loadGallery() {
 function renderGallery(items) {
   const grid = document.getElementById("gallery-grid");
   if (!items.length) {
-    grid.innerHTML = '<p class="gallery-note reveal" style="grid-column:1/-1;">No hay capturas aún. Dale a "Gestionar galería" y sube la primera.</p>';
+    grid.innerHTML = '<p class="gallery-note reveal" style="grid-column:1/-1;">No hay capturas aún.</p>';
     return;
   }
   grid.innerHTML = items.map(item => {
