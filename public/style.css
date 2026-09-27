@@ -747,3 +747,14 @@ footer::before {
   90% { opacity: 0.4; }
   100% { transform: translateY(-100px) scale(1); opacity: 0; }
 }
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-elevated: #111111;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(138,171,92,0.3);
+  --text: #e0e0e0;
+  --text-dim: #999999;
+  /* Keep accent colors as they work on dark */
+}
