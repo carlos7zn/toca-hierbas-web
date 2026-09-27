@@ -1,13 +1,28 @@
 // scripts/generate-gallery.js
-// Ejecutar en: vercel.json -> buildCommand: "node scripts/generate-gallery.js && <tu-build-normal>"
-// O como GitHub Action / Vercel Build Step
+// Ejecutar en: vercel.json -> buildCommand: "node scripts/generate-gallery.js"
+// No requiere dependencias externas - parsea frontmatter manualmente
 
 const fs = require('fs');
 const path = require('path');
-const matter = require('gray-matter'); // npm i gray-matter
 
 const CONTENT_DIR = path.join(__dirname, '../content/gallery');
 const OUTPUT_FILE = path.join(__dirname, '../public/gallery.json');
+
+function parseFrontmatter(content) {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return { data: {}, content: content };
+  
+  const fm = match[1];
+  const data = {};
+  fm.split('\n').forEach(line => {
+    const [key, ...val] = line.split(':');
+    if (key && val.length) {
+      data[key.trim()] = val.join(':').trim().replace(/^["']|["']$/g, '');
+    }
+  });
+  const body = content.slice(match[0].length).trim();
+  return { data, content: body };
+}
 
 function main() {
   if (!fs.existsSync(CONTENT_DIR)) {
@@ -19,7 +34,7 @@ function main() {
   const files = fs.readdirSync(CONTENT_DIR).filter(f => f.endsWith('.md'));
   const items = files.map(file => {
     const full = fs.readFileSync(path.join(CONTENT_DIR, file), 'utf-8');
-    const {data, content} = matter(full);
+    const {data, content} = parseFrontmatter(full);
     return {
       slug: file.replace('.md', ''),
       title: data.title || 'Sin título',
