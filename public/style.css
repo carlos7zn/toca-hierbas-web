@@ -561,6 +561,150 @@ footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: 
   margin-left: 8px;
 }
 
+/* Salseo page styles */
+.salseo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.salseo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.salseo-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+}
+
+.salseo-card-badge {
+  position: absolute;
+  top: 16px;
+  right: -40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: white;
+  padding: 6px 48px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: rotate(45deg);
+}
+
+.salseo-card h2 {
+  font-size: 1.5rem;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+.salseo-image-wrap {
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.salseo-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.salseo-card:hover .salseo-image-wrap img {
+  transform: scale(1.02);
+}
+
+.salseo-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.salseo-tags .tag {
+  display: inline-block;
+  background: rgba(138,171,92,0.1);
+  color: var(--accent-strong);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  margin-left: 8px;
+}
+
+.salseo-description {
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.salseo-coming-soon {
+  grid-column: 1 / -1;
+}
+
+.salseo-placeholder {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.salseo-placeholder-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.salseo-placeholder h3 {
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+.salseo-placeholder p {
+  color: var(--text-dim);
+  margin: 0 0 24px;
+}
+
+.salseo-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--surface-elevated);
+  border-radius: 20px;
+}
+
+.counter-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.counter-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Light theme salseo adjustments */
+[data-theme="light"] .salseo-card-badge {
+  background: linear-gradient(135deg, #6b8e3c, #8aab5c);
+}
+
 /* Admin page specific */
 .admin-container { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 .auth-form { text-align: center; }
