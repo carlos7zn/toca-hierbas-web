@@ -328,6 +328,12 @@ if (typeof THREE !== 'undefined') {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     applyTheme(newTheme);
+    
+    // Add a little animation feedback
+    themeToggle.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+      themeToggle.style.transform = '';
+    }, 150);
   });
   
   // Listen for system preference changes
