@@ -134,7 +134,7 @@
       <h3>Atrapa las Hojas</h3>
       <p>Tienes 20 segundos. Haz click tan rápido como puedas en las hojas que aparezcan en pantalla para conseguir la máxima puntuación.</p>
       <div class="author">Creador: Toca Hierbas</div>
-      <a href="#classic-game" class="btn btn-ghost" style="margin-top: 8px;"><span>Jugar abajo ↓</span></a>
+      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
     </div>
 
     <!-- Adivina el Juego -->
@@ -143,7 +143,7 @@
       <h3>Adivina el Juego</h3>
       <p>¡Encuentra parejas de cartas con logos de juegos populares! ¿Reconoces todos los juegos de la comunidad?</p>
       <div class="author">Próximamente</div>
-      <a href="#" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
+      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
     </div>
 
     <!-- Reacciona Rápido -->
@@ -152,7 +152,7 @@
       <h3>Reacciona Rápido</h3>
       <p>¿Cuán rápido puedes presionar el botón? Compite contra el cronómetro y bate tu récord personal.</p>
       <div class="author">Próximamente</div>
-      <a href="#" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Reacciona Rápido →</span></a>
+      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
     </div>
 
     <!-- Trivia Gamer -->
@@ -161,7 +161,7 @@
       <h3>Trivia Gamer</h3>
       <p>Demuestra tu conocimiento sobre juegos, memes y la cultura gamer. ¿Eres el más sabio de Toca Hierbas?</p>
       <div class="author">Próximamente</div>
-      <a href="#" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Trivia Gamer →</span></a>
+      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
     </div>
 
     <!-- Sube tu juego -->
@@ -265,6 +265,307 @@ document.addEventListener('DOMContentLoaded', () => {
     spawnerId = setInterval(spawnLeaf, 600);
     spawnLeaf();
   });
+});
+</script>
+
+<script>
+// Adivina el Juego - Memory Card Game
+let firstCard = null;
+let lockBoard = false;
+let matchedPairs = 0;
+let timer;
+let timeLeft = 30;
+
+function flipCard(card, index, name) {
+  if (lockBoard || card.classList.contains('flipped')) return;
+  
+  card.classList.add('flipped');
+  
+  if (!firstCard) {
+    firstCard = { card, name, index };
+  } else {
+    lockBoard = true;
+    
+    if (firstCard.name === name && firstCard.index !== index) {
+      matchedPairs++;
+      document.getElementById('pairs-found').textContent = matchedPairs;
+      if (matchedPairs === 12) {
+        clearInterval(timer);
+        document.getElementById('restart-adivina').style.display = 'inline-block';
+      }
+    } else {
+      setTimeout(() => {
+        card.classList.remove('flipped');
+        firstCard.card.classList.remove('flipped');
+        firstCard = null;
+        lockBoard = false;
+      }, 1000);
+    }
+  }
+}
+
+function updateTimer() {
+  timeLeft--;
+  document.getElementById('timer-adivina').textContent = timeLeft;
+  if (timeLeft <= 0) {
+    clearInterval(timer);
+    document.getElementById('restart-adivina').style.display = 'inline-block';
+    alert(`¡Tiempo terminado! Encontraste ${matchedPairs} parejas.`);
+  }
+}
+
+function initializeAdivinaGame() {
+  const cards = document.querySelectorAll('#game-area-adivina .card');
+  const gameLogos = [
+    {name: "Valorant", color: "#e74c3c"}, {name: "League of Legends", color: "#ff8c00"},
+    {name: "Minecraft", color: "#2ecc71"}, {name: "Overwatch", color: "#3498db"},
+    {name: "Fortnite", color: "#9b59b6"}, {name: "Apex Legends", color: "#1abc9c"},
+    {name: "CS:GO", color: "#95a5a6"}, {name: "Rocket League", color: "#f39c12"},
+    {name: "Among Us", color: "#e67e22"}, {name: "Dead by Daylight", color: "#e74c3c"},
+    {name: "Rainbow Six", color: "#34495e"}, {name: "Destiny 2", color: "#2c3e50"}
+  ];
+  
+  const gameLogosDuplicated = gameLogos.concat(gameLogos);
+  const shuffledLogos = gameLogosDuplicated.sort(() => Math.random() - 0.5);
+  
+  const gameArea = document.getElementById('game-area-adivina');
+  gameArea.innerHTML = '';
+  
+  shuffledLogos.forEach((logo, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.index = index;
+    card.dataset.name = logo.name;
+    card.style.cssText = `
+      height: 120px;
+      background: ${logo.color}40;
+      border: 2px solid ${logo.color};
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    `;
+    
+    const cardInner = document.createElement('div');
+    cardInner.style.cssText = `
+      transform: rotateY(180deg);
+      transition: transform 0.5s;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    cardInner.innerHTML = `<div style="color: white; font-weight: bold; font-size: 1.2rem;">${logo.name}</div>`;
+    
+    const cardBack = document.createElement('div');
+    cardBack.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #34495e, #2c3e50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    cardBack.innerHTML = '<span style="color: white; font-size: 2rem;">🎮</span>';
+    
+    card.appendChild(cardInner);
+    card.appendChild(cardBack);
+    
+    card.addEventListener('click', () => flipCard(card, index, logo.name));
+    
+    gameArea.appendChild(card);
+  });
+}
+
+function restartAdivinaGame() {
+  matchedPairs = 0;
+  timeLeft = 30;
+  firstCard = null;
+  lockBoard = false;
+  
+  document.getElementById('pairs-found').textContent = '0';
+  document.getElementById('timer-adivina').textContent = '30';
+  document.getElementById('restart-adivina').style.display = 'none';
+  
+  clearInterval(timer);
+  initializeAdivinaGame();
+  timer = setInterval(updateTimer, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeAdivinaGame();
+  
+  document.getElementById('restart-adivina').addEventListener('click', restartAdivinaGame);
+  
+  timer = setInterval(updateTimer, 1000);
+});
+</script>
+
+<script>
+// Reacciona Rápido - Reaction Time Game
+let reactionGameActive = false;
+let reactionTimer = null;
+let bestTime = localStorage.getItem('bestReactionTime') ? parseFloat(localStorage.getItem('bestReactionTime')) : null;
+let attempts = 0;
+
+function startReactionGame() {
+  if (reactionGameActive) return;
+  
+  reactionGameActive = true;
+  attempts++;
+  document.getElementById('reaction-count').textContent = attempts;
+  
+  const gameArea = document.getElementById('game-area-reaction');
+  const startBtn = document.getElementById('start-reaction');
+  
+  gameArea.style.background = 'var(--accent)';
+  gameArea.style.borderColor = 'var(--accent-strong)';
+  
+  let startTime = Date.now();
+  
+  const clickHandler = function(e) {
+    if (!reactionGameActive) return;
+    
+    const reactionTime = (Date.now() - startTime) / 1000;
+    
+    gameArea.style.background = 'var(--surface)';
+    gameArea.style.borderColor = 'var(--border)';
+    
+    gameArea.removeEventListener('click', clickHandler);
+    
+    gameArea.innerHTML = `
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">${reactionTime.toFixed(2)}s</div>
+        <div style="color: var(--text-dim);">Tu tiempo de reacción</div>
+      </div>
+    `;
+    
+    if (!bestTime || reactionTime < bestTime) {
+      bestTime = reactionTime;
+      localStorage.setItem('bestReactionTime', bestTime.toString());
+      document.getElementById('best-reaction').textContent = bestTime.toFixed(2) + 's';
+    }
+    
+    setTimeout(() => {
+      gameArea.innerHTML = `
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
+          <div style="color: var(--text-dim);">Haz clic en el área cuando estés listo</div>
+        </div>
+      `;
+      reactionGameActive = false;
+    }, 2000);
+  };
+  
+  gameArea.addEventListener('click', clickHandler);
+  
+  startBtn.style.display = 'none';
+  
+  const delay = Math.random() * 2000 + 1000;
+  setTimeout(() => {
+    if (reactionGameActive) {
+      startTime = Date.now();
+    }
+  }, delay);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const startBtn = document.getElementById('start-reaction');
+  if (startBtn) {
+    startBtn.addEventListener('click', startReactionGame);
+  }
+  
+  if (bestTime) {
+    document.getElementById('best-reaction').textContent = bestTime.toFixed(2) + 's';
+  }
+});
+</script>
+
+<script>
+// Trivia Gamer - Quiz Game
+let currentQuestion = 0;
+let score = 0;
+
+function showQuestion(questionIndex) {
+  document.querySelectorAll('.trivia-question').forEach(q => {
+    q.style.display = 'none';
+  });
+  
+  const currentQ = document.querySelector(`.trivia-question[data-question="${questionIndex}"]`);
+  if (currentQ) {
+    currentQ.style.display = 'block';
+  }
+  
+  document.getElementById('trivia-question').textContent = questionIndex + 1;
+  document.getElementById('trivia-total').textContent = triviaQuestions.length;
+  document.getElementById('trivia-score').textContent = score;
+  
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+}
+
+function checkAnswer(questionIndex, optionIndex, isCorrect) {
+  if (isCorrect) {
+    score++;
+    document.getElementById('trivia-score').textContent = score;
+  }
+  
+  currentQuestion++;
+  
+  if (currentQuestion < triviaQuestions.length) {
+    showQuestion(currentQuestion);
+    document.getElementById('next-trivia').style.display = 'inline-block';
+  } else {
+    document.getElementById('next-trivia').textContent = 'Jugar de nuevo';
+    document.getElementById('next-trivia').style.display = 'inline-block';
+    alert(`¡Juego terminado! Puntuaje final: ${score}/${triviaQuestions.length}`);
+    
+    currentQuestion = 0;
+    score = 0;
+    showQuestion(currentQuestion);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showQuestion(currentQuestion);
+  
+  document.querySelectorAll('.option').forEach(option => {
+    option.addEventListener('click', () => {
+      const questionIndex = parseInt(option.closest('.trivia-question').dataset.question);
+      const optionIndex = parseInt(option.dataset.index);
+      const isCorrect = option.dataset.correct === 'true';
+      
+      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+      
+      setTimeout(() => {
+        checkAnswer(questionIndex, optionIndex, isCorrect);
+      }, 1000);
+    });
+  });
+  
+  const nextBtn = document.getElementById('next-trivia');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < triviaQuestions.length) {
+        showQuestion(currentQuestion);
+      } else {
+        currentQuestion = 0;
+        score = 0;
+        showQuestion(currentQuestion);
+        nextBtn.style.display = 'none';
+      }
+    });
+  }
 });
 </script>
 </body>
