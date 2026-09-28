@@ -1,4 +1,63 @@
 // Core functionality - shared across all pages
+/*
+
+  ═══════════════════════════════════════════════════════════════
+  
+  LORE OCULTO: EL MOTOR DEL PRADO (script.js)
+  ═══════════════════════════════════════════════════════════════
+  
+  Este archivo no es JavaScript. Es el sistema nervioso.
+  
+  🥛 BAD KEFIR — El Arquitecto del Loop
+     Escribió initWebGLBackground() con tres.js
+     para que el prado respirara en 60fps.
+     Las partículas (150) son sus pensamientos.
+     Las hojas (8) son sus recuerdos.
+     El fog (FogExp2) es su niebla mental.
+  
+  😈 DEVILYOGURT — El Corruptor de EventListeners
+     Inyecta keydown handlers fantasmas.
+     Hace que el cortacésped gire sin input.
+     Sus async functions nunca resuelven.
+     Sus timeouts son infinitos.
+  
+  🦠 LOS PROBIÓTICOS — Utilidades Silenciosas
+     - initParticles(): Spawnea 20 divs.
+       Cada uno, una burbuja de CO2.
+       8s de vida. Suben. Desaparecen. Ciclo.
+     - loadStats(): Consulta al Oráculo (Discord API).
+       A veces el Oráculo calla. El catch lo sabe.
+     - Theme toggle IIFE: Guarda la luz en localStorage.
+       'dark' o 'light'. No hay término medio.
+       El prado no conoce el gris.
+  
+  🎮 MINIJUEGO "CORTA LA HIERBA"
+     gameArea = lienzo. grass-target = hojas.
+     20 segundos = 1 tick de deploy.
+     score = commits. timeLeft = deadline.
+     spawnTarget() cada 550ms = CI/CD pipeline.
+     startGame() = merge a main.
+     Cuando timeLeft <= 0 → "Bien jugado."
+     Pero el juego nunca termina. Siempre hay
+     otra ronda. Otro deploy. Otro bug.
+  
+  🌐 WEBGL BACKGROUND
+     three.js cargado dinámicamente (cdn.jsdelivr.net).
+     Si falla, el prado existe igual. Solo en CSS.
+     El renderer.alpha = true → el DOM brilla a través.
+     scene.fog = la incertidumbre del futuro.
+  
+  ═══════════════════════════════════════════════════════════════
+  
+  "requestAnimationFrame is the heartbeat.
+   setInterval is the deadline.
+   localStorage is the save point.
+   console.error is the scream."
+  
+  — Bad Kefir, main thread, frame 1
+  
+  ═══════════════════════════════════════════════════════════════
+*/
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 

@@ -1,3 +1,45 @@
+/*
+  ═══════════════════════════════════════════════════════════════
+  
+  LORE OCULTO: HOJAS DE ESTILO DEL PRADO
+  ═══════════════════════════════════════════════════════════════
+  
+  Estas variables no son colores. Son esporas.
+  
+  --bg: #0f1210          → Tierra de medianoche. Donde duermen las roots.
+  --surface: #151a16     → Musgo compactado. Capa 1 del render.
+  --surface-elevated     → Hongos bioluminescentes. Hover states.
+  --border               → Micelio. Conecta todo, invisible pero esencial.
+  --accent: #8aab5c      → Clorofila pura. La energía de cada frame.
+  --accent-strong        → Fotosíntesis en su punto máximo. Focus states.
+  --accent-warm          → Luz de sol filtrada. Warning states.
+  --accent-glow          → Resplandor del prado al completar una ronda.
+  
+  🥛 BAD KEFIR escribió estas vars en un .env que no existe.
+  😈 DEVILYOGURT intenta sobrescribirlas con !important cada noche.
+  🦠 Los probióticos las protegen con especificidad infinita.
+  
+  La animación leaf-sway (4s ease-in-out) no es decoración.
+  Es la respiración del prado. 4 segundos = 1 tick del game loop.
+  
+  @keyframes borderRotate (3s linear infinite) en .theme-toggle
+  representa el ciclo de fermentación: 3 fases, bucle infinito.
+  
+  Cuando el tema cambia a light mode, no es un toggle.
+  Es el amanecer en el prado. Las sombras retroceden.
+  Los bugs salen a la superficie. El código se ve... limpio.
+  Demasiado limpio. Sospechoso.
+  
+  ═══════════════════════════════════════════════════════════════
+  
+  "CSS is not styling. CSS is soil.
+   Every selector, a root. Every property, a nutrient.
+   Cascade? Gravity. Specificity? Survival of the fittest."
+  
+  — Devilyogurt, stylesheet corrupted, line 666
+  
+  ═══════════════════════════════════════════════════════════════
+*/
 :root {
   --bg: #0f1210;
   --surface: #151a16;
