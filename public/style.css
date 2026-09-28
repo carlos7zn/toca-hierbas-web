@@ -539,6 +539,28 @@ section.reveal.is-visible h2::after { transform: scaleX(1); }
 footer { border-top: 1px solid var(--border); padding: 36px 0 50px; color: var(--text-dim); font-size: 0.85rem; position: relative; }
 footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
 
+.footer-legal {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  opacity: 0.7;
+  text-align: center;
+}
+.footer-legal a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-legal a:hover {
+  color: var(--accent-strong);
+}
+.footer-legal a:not(:last-child)::after {
+  content: ' · ';
+  margin-left: 8px;
+}
+
 /* Admin page specific */
 .admin-container { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 .auth-form { text-align: center; }
