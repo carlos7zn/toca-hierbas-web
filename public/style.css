@@ -613,6 +613,21 @@ footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: 
   border: 1px solid var(--border);
 }
 
+.salseo-video-wrap {
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.salseo-video-wrap video {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #000;
+}
+
 .salseo-image-wrap img {
   width: 100%;
   height: auto;
