@@ -184,40 +184,40 @@
     </div>
 
     <!-- Atrapa las Hojas -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">⚡ Minijuego Clásico</span>
-      <h3>Atrapa las Hojas</h3>
-      <p>Tienes 20 segundos. Haz click tan rápido como puedas en las hojas que aparezcan en pantalla para conseguir la máxima puntuación.</p>
-      <div class="author">Creador: Toca Hierbas</div>
-      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
-    </div>
+        <div class="game-card reveal up">
+          <span class="game-card-tag">⚡ Minijuego Clásico</span>
+          <h3>Atrapa las Hojas</h3>
+          <p>Tienes 20 segundos. Haz click tan rápido como puedas en las hojas que aparezcan en pantalla para conseguir la máxima puntuación.</p>
+          <div class="author">Creador: Toca Hierbas</div>
+          <a href="#classic-game" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Atrapa las Hojas →</span></a>
+        </div>
 
-    <!-- Adivina el Juego -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">🧠 Memoria & Observación</span>
-      <h3>Adivina el Juego</h3>
-      <p>¡Encuentra parejas de cartas con logos de juegos populares! ¿Reconoces todos los juegos de la comunidad?</p>
-      <div class="author">Próximamente</div>
-      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
-    </div>
+        <!-- Adivina el Juego -->
+        <div class="game-card reveal up">
+          <span class="game-card-tag">🧠 Memoria & Observación</span>
+          <h3>Adivina el Juego</h3>
+          <p>¡Encuentra parejas de cartas con logos de juegos populares! ¿Reconoces todos los juegos de la comunidad?</p>
+          <div class="author">Creador: Toca Hierbas</div>
+          <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
+        </div>
 
-    <!-- Reacciona Rápido -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">⏱️ Velocidad & Reflexes</span>
-      <h3>Reacciona Rápido</h3>
-      <p>¿Cuán rápido puedes presionar el botón? Compite contra el cronómetro y bate tu récord personal.</p>
-      <div class="author">Próximamente</div>
-      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
-    </div>
+        <!-- Reacciona Rápido -->
+        <div class="game-card reveal up">
+          <span class="game-card-tag">⏱️ Velocidad & Reflexes</span>
+          <h3>Reacciona Rápido</h3>
+          <p>¿Cuán rápido puedes presionar el botón? Compite contra el cronómetro y bate tu récord personal.</p>
+          <div class="author">Creador: Toca Hierbas</div>
+          <a href="#reacciona-rapido" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Reacciona Rápido →</span></a>
+        </div>
 
-    <!-- Trivia Gamer -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">❓ Trivia & Conocimiento</span>
-      <h3>Trivia Gamer</h3>
-      <p>Demuestra tu conocimiento sobre juegos, memes y la cultura gamer. ¿Eres el más sabio de Toca Hierbas?</p>
-      <div class="author">Próximamente</div>
-      <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
-    </div>
+        <!-- Trivia Gamer -->
+        <div class="game-card reveal up">
+          <span class="game-card-tag">❓ Trivia & Conocimiento</span>
+          <h3>Trivia Gamer</h3>
+          <p>Demuestra tu conocimiento sobre juegos, memes y la cultura gamer. ¿Eres el más sabio de Toca Hierbas?</p>
+          <div class="author">Creador: Toca Hierbas</div>
+          <a href="#trivia-gamer" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Trivia Gamer →</span></a>
+        </div>
 
     <!-- Sube tu juego -->
     <div class="game-card reveal up">
@@ -243,6 +243,228 @@
     <button class="btn" id="game-start" style="margin-top: 16px;"><span>Jugar Atrapa la Hierba</span></button>
   </div>
 </section>
+
+<!-- Adivina el Juego - Memory Card Game Section -->
+<section class="wrap arcade-section reveal up" id="adivina-juego">
+  <h2>Adivina el Juego 🧠</h2>
+  <div class="game-wrap" style="max-width: 800px;">
+    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
+      <span>Parejas: <strong id="pairs-found">0</strong>/12</span>
+      <span>Tiempo: <strong id="timer-adivina">30</strong>s</span>
+    </div>
+    <div class="game-area" id="game-area-adivina" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; min-height: 360px;">
+      <!-- Cards injected by JS -->
+    </div>
+    <button class="btn" id="restart-adivina" style="margin-top: 16px; display: none;"><span>Jugar de nuevo</span></button>
+  </div>
+</section>
+
+<!-- Reacciona Rápido - Reaction Time Game Section -->
+<section class="wrap arcade-section reveal up" id="reacciona-rapido">
+  <h2>Reacciona Rápido ⏱️</h2>
+  <div class="game-wrap" style="max-width: 640px; text-align: center;">
+    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
+      <span>Intentos: <strong id="reaction-count">0</strong></span>
+      <span>Mejor tiempo: <strong id="best-reaction">—</strong></span>
+    </div>
+    <div class="game-area" id="game-area-reaction" style="width: 100%; height: 200px; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+      <div style="color: var(--text-dim);">Haz clic en el área cuando estés listo</div>
+    </div>
+    <button class="btn" id="start-reaction" style="margin-top: 16px;"><span>Empezar prueba</span></button>
+  </div>
+</section>
+
+<!-- Trivia Gamer - Quiz Game Section -->
+<section class="wrap arcade-section reveal up" id="trivia-gamer">
+  <h2>Trivia Gamer ❓</h2>
+  <div class="game-wrap" style="max-width: 720px;">
+    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
+      <span>Pregunta: <strong id="trivia-question">1</strong>/<span id="trivia-total">5</span></span>
+      <span>Puntuación: <strong id="trivia-score">0</strong></span>
+    </div>
+    <div id="trivia-questions">
+      <!-- Questions injected by JS -->
+    </div>
+    <button class="btn" id="next-trivia" style="margin-top: 16px; display: none;"><span>Siguiente</span></button>
+  </div>
+</section>
+
+<script>
+// Trivia Questions Data
+const triviaQuestions = [
+  {
+    question: "¿En qué año salió el primer Counter-Strike como mod de Half-Life?",
+    options: [
+      { text: "1999", correct: true },
+      { text: "2000", correct: false },
+      { text: "2001", correct: false },
+      { text: "1998", correct: false }
+    ]
+  },
+  {
+    question: "¿Cuál es el nombre del protagonista de la saga Metal Gear Solid?",
+    options: [
+      { text: "Solid Snake", correct: true },
+      { text: "Big Boss", correct: false },
+      { text: "Raiden", correct: false },
+      { text: "Venom Snake", correct: false }
+    ]
+  },
+  {
+    question: "¿Qué empresa desarrolló el juego 'Hollow Knight'?",
+    options: [
+      { text: "Team Cherry", correct: true },
+      { text: "Supergiant Games", correct: false },
+      { text: "Motion Twin", correct: false },
+      { text: "ConcernedApe", correct: false }
+    ]
+  },
+  {
+    question: "En League of Legends, ¿cuántos campeones hay aproximadamente (2024)?",
+    options: [
+      { text: "160+", correct: true },
+      { text: "140+", correct: false },
+      { text: "120+", correct: false },
+      { text: "180+", correct: false }
+    ]
+  },
+  {
+    question: "¿Cuál es el nombre del perro de Duck Hunt?",
+    options: [
+      { text: "No tiene nombre oficial", correct: true },
+      { text: "Duke", correct: false },
+      { text: "Barker", correct: false },
+      { text: "Rover", correct: false }
+    ]
+  }
+];
+
+// Trivia Gamer - Quiz Game Logic
+let currentQuestion = 0;
+let score = 0;
+
+function renderTriviaQuestions() {
+  const container = document.getElementById('trivia-questions');
+  if (!container) return;
+  
+  container.innerHTML = triviaQuestions.map((q, qIndex) => `
+    <div class="trivia-question" data-question="${qIndex}" style="${qIndex === 0 ? 'display: block;' : 'display: none;'}">
+      <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${q.question}</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        ${q.options.map((opt, oIndex) => `
+          <button class="option" data-index="${oIndex}" data-correct="${opt.correct}" style="
+            padding: 14px 20px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+          " onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showQuestion(questionIndex) {
+  document.querySelectorAll('.trivia-question').forEach(q => {
+    q.style.display = 'none';
+  });
+  
+  const currentQ = document.querySelector(`.trivia-question[data-question="${questionIndex}"]`);
+  if (currentQ) {
+    currentQ.style.display = 'block';
+  }
+  
+  document.getElementById('trivia-question').textContent = questionIndex + 1;
+  document.getElementById('trivia-total').textContent = triviaQuestions.length;
+  document.getElementById('trivia-score').textContent = score;
+  
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.classList.remove('selected');
+    opt.style.borderColor = 'var(--border)';
+    opt.style.background = 'var(--surface)';
+  });
+}
+
+function checkAnswer(questionIndex, optionIndex, isCorrect) {
+  if (isCorrect) {
+    score++;
+    document.getElementById('trivia-score').textContent = score;
+  }
+  
+  // Visual feedback
+  const options = document.querySelectorAll(`.trivia-question[data-question="${questionIndex}"] .option`);
+  options.forEach((opt, idx) => {
+    const correct = opt.dataset.correct === 'true';
+    if (idx === optionIndex) {
+      opt.style.borderColor = isCorrect ? 'var(--accent-strong)' : '#e04';
+      opt.style.background = isCorrect ? 'rgba(138,171,92,0.2)' : 'rgba(224,0,68,0.2)';
+    }
+    if (correct) {
+      opt.style.borderColor = 'var(--accent-strong)';
+      opt.style.background = 'rgba(138,171,92,0.2)';
+    }
+    opt.disabled = true;
+  });
+  
+  currentQuestion++;
+  
+  if (currentQuestion < triviaQuestions.length) {
+    document.getElementById('next-trivia').style.display = 'inline-block';
+    document.getElementById('next-trivia').querySelector('span').textContent = 'Siguiente';
+  } else {
+    document.getElementById('next-trivia').style.display = 'inline-block';
+    document.getElementById('next-trivia').querySelector('span').textContent = 'Jugar de nuevo';
+    setTimeout(() => {
+      alert(`¡Juego terminado! Puntuaje final: ${score}/${triviaQuestions.length}`);
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTriviaQuestions();
+  showQuestion(currentQuestion);
+  
+  document.querySelectorAll('.option').forEach(option => {
+    option.addEventListener('click', () => {
+      if (option.disabled) return;
+      const questionIndex = parseInt(option.closest('.trivia-question').dataset.question);
+      const optionIndex = parseInt(option.dataset.index);
+      const isCorrect = option.dataset.correct === 'true';
+      
+      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+      
+      setTimeout(() => {
+        checkAnswer(questionIndex, optionIndex, isCorrect);
+      }, 1000);
+    });
+  });
+  
+  const nextBtn = document.getElementById('next-trivia');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < triviaQuestions.length) {
+        showQuestion(currentQuestion);
+        nextBtn.style.display = 'none';
+      } else {
+        currentQuestion = 0;
+        score = 0;
+        showQuestion(currentQuestion);
+        nextBtn.style.display = 'none';
+        nextBtn.querySelector('span').textContent = 'Siguiente';
+      }
+    });
+  }
+});
+</script>
 
 <footer class="wrap"><footer class="wrap">
     <p class="footer-legal"><a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
