@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Moto X3M Pool Party · Toca Hierbas</title>
+<meta name="description" content="Moto X3M Pool Party - La versión veraniega del clásico de motos. 22 niveles con acrobacias, loops y piscinas. Juega gratis en tu navegador." />
+<meta name="theme-color" content="#0f1210" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z' fill='%238aab5c'/%3E%3Cpath d='M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.moto-page { margin: 0; min-height: 100vh; overflow: hidden; background: #0a0a0a; font-family: Inter, sans-serif; color: #e8e8e8; touch-action: manipulation; }
+.game-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(15,18,16,0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.game-header .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+.game-header .back-btn:hover { border-color: var(--accent); color: var(--accent-strong); background: var(--surface-elevated); }
+.game-header h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; color: var(--text); }
+.game-header .muted { color: var(--text-dim); font-size: 0.8rem; }
+.fullscreen-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 50; padding: 12px 20px; background: linear-gradient(135deg, #8aab5c, #a6c47c); border: none; border-radius: 10px; color: #0f1210; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 20px rgba(138,171,92,0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; }
+.fullscreen-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(138,171,92,0.5); }
+.fullscreen-toggle:active { transform: translateY(1px); }
+#game-frame { position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; background: #000; z-index: 1; }
+#game-frame.loading { opacity: 0; transition: opacity 0.5s ease; }
+#game-frame.loaded { opacity: 1; }
+.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(138,171,92,0.2); border-top-color: #8aab5c; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; color: #8aab5c; }
+.loading-sub { color: var(--text-dim); font-size: 0.9rem; }
+@media (max-width: 768px) {
+  .game-header { padding: 10px 16px; }
+  .game-header h1 { font-size: 1.1rem; }
+  .fullscreen-toggle { bottom: 12px; right: 12px; padding: 10px 16px; font-size: 0.85rem; }
+}
+</style>
+</head>
+<body class="moto-page">
+
+<div class="bg-atmosphere" aria-hidden="true"></div>
+<div class="particles" aria-hidden="true" id="particles"></div>
+<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+<header class="game-header">
+  <a href="juego.html" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Biblioteca</span>
+  </a>
+  <h1>Moto X3M Pool Party 🏍️</h1>
+  <span class="muted">Carreras · Acrobacias · Verano</span>
+</header>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Moto X3M Pool Party</div>
+  <div class="loading-sub">Cargando juego...</div>
+</div>
+
+<iframe id="game-frame" class="loading" src="https://play.famobi.com/moto-x3m-pool-party/embed" allow="fullscreen; autoplay" referrerpolicy="no-referrer-when-downgrade" title="Moto X3M Pool Party"></iframe>
+
+<button class="fullscreen-toggle" id="fs-toggle" aria-label="Pantalla completa">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+  <span>Pantalla completa</span>
+</button>
+
+<footer class="wrap" style="position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(15,18,16,0.95);border-top:1px solid var(--border);padding:8px 24px;">
+  <p class="footer-legal" style="margin:0;font-size:0.75rem;text-align:center;">
+    Moto X3M Pool Party por <a href="https://madpuffers.com" target="_blank" rel="noopener" style="color:var(--accent-strong);">MadPuffers</a> · Distribuido por <a href="https://famobi.com" target="_blank" rel="noopener" style="color:var(--accent-strong);">Famobi</a> · En Toca Hierbas
+  </p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+const frame = document.getElementById("game-frame");
+const loadingOverlay = document.getElementById("loading-overlay");
+let isFullscreen = false;
+
+frame.addEventListener("load", () => {
+  frame.classList.remove("loading");
+  frame.classList.add("loaded");
+  loadingOverlay.classList.add("hidden");
+});
+
+const fsBtn = document.getElementById("fs-toggle");
+fsBtn.addEventListener("click", async () => {
+  if (!document.fullscreenElement) {
+    try {
+      await frame.requestFullscreen();
+      fsBtn.querySelector('span').textContent = "Salir pantalla completa";
+      fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 14h6v-4M4 10h6v4M20 14h-6v-4M20 10h-6v4"/></svg><span>Salir pantalla completa</span>';
+    } catch(e) { console.warn("Fullscreen denied:", e); }
+  } else {
+    await document.exitFullscreen();
+    fsBtn.querySelector('span').textContent = "Pantalla completa";
+    fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>Pantalla completa</span>';
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    fsBtn.querySelector('span').textContent = "Pantalla completa";
+    fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>Pantalla completa</span>';
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+});
+</script>
+</body>
+</html>
