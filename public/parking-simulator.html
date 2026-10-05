@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parking Simulator</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #e0e0e0;
+      user-select: none;
+    }
+
+    /* ── Game wrapper ─────────────────────────────────────────────── */
+    #game-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,200,255,0.2), 0 0 80px rgba(0,200,255,0.05);
+    }
+
+    canvas {
+      display: block;
+      background: #2c2c4a;
+    }
+
+    /* ── HUD overlay ──────────────────────────────────────────────── */
+    #hud {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 16px;
+      pointer-events: none;
+    }
+
+    .hud-box {
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .hud-box span { color: #60d9ff; font-weight: 700; font-size: 16px; }
+
+    /* ── Screens ──────────────────────────────────────────────────── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: rgba(10,10,30,0.88);
+      backdrop-filter: blur(4px);
+    }
+
+    .screen h1 { font-size: 2.2rem; letter-spacing: 2px; color: #60d9ff; }
+    .screen h2 { font-size: 1.6rem; color: #ffd166; }
+    .screen p  { font-size: 0.95rem; color: #aaa; max-width: 340px; text-align: center; line-height: 1.6; }
+
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #0070f3, #00c8ff);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(0,200,255,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      pointer-events: all;
+    }
+    .btn:hover  { transform: scale(1.05); box-shadow: 0 6px 26px rgba(0,200,255,0.5); }
+    .btn:active { transform: scale(0.97); }
+
+    .stars { font-size: 2rem; letter-spacing: 6px; }
+
+    /* ── Mobile controls ──────────────────────────────────────────── */
+    #touch-controls {
+      display: none;
+      margin-top: 16px;
+      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .touch-row { display: flex; gap: 10px; }
+
+    .t-btn {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+    .t-btn:active { background: rgba(0,200,255,0.35); }
+
+    @media (pointer: coarse) {
+      #touch-controls { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <canvas id="c"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-box">
+      ⏱ Tiempo: <span id="h-time">60</span>s<br>
+      ⭐ Nivel: <span id="h-level">1</span>
+    </div>
+    <div class="hud-box">
+      🏆 Puntos: <span id="h-score">0</span><br>
+      💥 Golpes: <span id="h-hits">0</span>
+    </div>
+  </div>
+
+  <!-- Start screen -->
+  <div class="screen" id="start-screen">
+    <h1>🅿 PARKING<br>SIMULATOR</h1>
+    <p>Aparca el coche en la plaza marcada sin chocar. ¡Cuanto más rápido, más puntos!</p>
+    <p style="color:#60d9ff;font-size:.85rem">
+      ← → Girar &nbsp;|&nbsp; ↑ Avanzar &nbsp;|&nbsp; ↓ Retroceder
+    </p>
+    <button class="btn" id="start-btn">▶ JUGAR</button>
+  </div>
+
+  <!-- Win screen -->
+  <div class="screen" id="win-screen" style="display:none">
+    <h2>✅ ¡Aparcado!</h2>
+    <div class="stars" id="win-stars">⭐⭐⭐</div>
+    <p id="win-msg">Perfecto. Avanzando al siguiente nivel…</p>
+    <button class="btn" id="next-btn">Siguiente nivel ▶</button>
+  </div>
+
+  <!-- Lose screen -->
+  <div class="screen" id="lose-screen" style="display:none">
+    <h2 style="color:#ef4444">⏰ ¡Tiempo!</h2>
+    <p>No conseguiste aparcar a tiempo. ¡Inténtalo de nuevo!</p>
+    <p>Puntos: <span id="lose-score" style="color:#ffd166;font-weight:700">0</span></p>
+    <button class="btn" id="retry-btn">🔄 Reintentar</button>
+  </div>
+</div>
+
+<!-- Mobile controls -->
+<div id="touch-controls">
+  <div class="touch-row">
+    <div class="t-btn" id="t-up">▲</div>
+  </div>
+  <div class="touch-row">
+    <div class="t-btn" id="t-left">◀</div>
+    <div class="t-btn" id="t-down">▼</div>
+    <div class="t-btn" id="t-right">▶</div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+//  PARKING SIMULATOR  –  main game script
+// ─────────────────────────────────────────────────────────────────────────────
+
+const canvas  = document.getElementById('c');
+const ctx     = canvas.getContext('2d');
+
+// Responsive canvas size
+const W = Math.min(640, window.innerWidth - 24);
+const H = Math.round(W * 0.7);
+canvas.width  = W;
+canvas.height = H;
+
+// ── Colours ──────────────────────────────────────────────────────────────────
+const C = {
+  asphalt : '#1e1e2e',
+  line    : '#3a3a5a',
+  white   : '#ffffff',
+  yellow  : '#ffd166',
+  green   : '#06d6a0',
+  red     : '#ef4444',
+  blue    : '#0070f3',
+  cyan    : '#60d9ff',
+};
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+const keys = {};
+document.addEventListener('keydown', e => { keys[e.key] = true;  e.preventDefault(); });
+document.addEventListener('keyup',   e => { keys[e.key] = false; });
+
+// Touch buttons
+['t-up','t-down','t-left','t-right'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('touchstart', () => keys[id] = true,  { passive: true });
+  el.addEventListener('touchend',   () => keys[id] = false, { passive: true });
+  el.addEventListener('mousedown',  () => keys[id] = true);
+  el.addEventListener('mouseup',    () => keys[id] = false);
+});
+
+function isPressed(k) {
+  const map = {
+    up:    ['ArrowUp',   'w', 'W', 't-up'],
+    down:  ['ArrowDown', 's', 'S', 't-down'],
+    left:  ['ArrowLeft', 'a', 'A', 't-left'],
+    right: ['ArrowRight','d', 'D', 't-right'],
+  };
+  return map[k].some(code => keys[code]);
+}
+
+// ── Levels definition ─────────────────────────────────────────────────────────
+// Each level: car spawn, target spot, obstacle rectangles, time limit
+function makeLevels() {
+  const S = W / 640; // scale factor
+
+  return [
+    // ── Level 1 – open lot, easy spot ─────────────────────────────
+    {
+      time: 60,
+      carX: W * 0.12, carY: H * 0.5, carAngle: 0,
+      target: { x: W * 0.7, y: H * 0.35, w: 70 * S, h: 110 * S, angle: 0 },
+      walls: [
+        // outer boundary (thin inside rectangles, see drawWalls)
+        { x: 0,   y: 0,   w: W,  h: 12  },
+        { x: 0,   y: H-12,w: W,  h: 12  },
+        { x: 0,   y: 0,   w: 12, h: H   },
+        { x: W-12,y: 0,   w: 12, h: H   },
+        // dividers
+        { x: W*0.45, y: 0,        w: 14, h: H*0.28 },
+        { x: W*0.45, y: H - H*0.28, w: 14, h: H*0.28 },
+      ],
+      obstacles: [
+        { x: W*0.55, y: H*0.55, w: 60*S, h: 36*S, color: '#4a4a6a', label: '🚗' },
+        { x: W*0.70, y: H*0.6,  w: 60*S, h: 36*S, color: '#4a4a6a', label: '🚙' },
+      ],
+    },
+    // ── Level 2 – narrow alley, parallel park ─────────────────────
+    {
+      time: 55,
+      carX: W * 0.1, carY: H * 0.3, carAngle: 0,
+      target: { x: W * 0.6, y: H * 0.51, w: 70 * S, h: 110 * S, angle: Math.PI / 2 },
+      walls: [
+        { x: 0,   y: 0,   w: W,  h: 12  },
+        { x: 0,   y: H-12,w: W,  h: 12  },
+        { x: 0,   y: 0,   w: 12, h: H   },
+        { x: W-12,y: 0,   w: 12, h: H   },
+        { x: W*0.33, y: 0,      w: 14, h: H*0.38 },
+        { x: W*0.33, y: H*0.62, w: 14, h: H*0.38 },
+        { x: W*0.66, y: 0,      w: 14, h: H*0.38 },
+        { x: W*0.66, y: H*0.62, w: 14, h: H*0.38 },
+      ],
+      obstacles: [
+        { x: W*0.42, y: H*0.18, w: 60*S, h: 36*S, color: '#3d4a6a', label: '🚕' },
+        { x: W*0.42, y: H*0.72, w: 60*S, h: 36*S, color: '#5a3d6a', label: '🚌' },
+        { x: W*0.72, y: H*0.18, w: 60*S, h: 36*S, color: '#4a6a3d', label: '🚗' },
+        { x: W*0.72, y: H*0.72, w: 60*S, h: 36*S, color: '#6a4a3d', label: '🚙' },
+      ],
+    },
+    // ── Level 3 – busy lot, tight spot ────────────────────────────
+    {
+      time: 50,
+      carX: W * 0.08, carY: H * 0.8, carAngle: -Math.PI / 6,
+      target: { x: W * 0.78, y: H * 0.22, w: 70 * S, h: 110 * S, angle: 0 },
+      walls: [
+        { x: 0,   y: 0,   w: W,  h: 12  },
+        { x: 0,   y: H-12,w: W,  h: 12  },
+        { x: 0,   y: 0,   w: 12, h: H   },
+        { x: W-12,y: 0,   w: 12, h: H   },
+        { x: W*0.5,  y: 0,      w: 14, h: H*0.35 },
+        { x: W*0.5,  y: H*0.65, w: 14, h: H*0.35 },
+        { x: W*0.25, y: H*0.4,  w: 14, h: H*0.2  },
+        { x: W*0.75, y: H*0.4,  w: 14, h: H*0.2  },
+      ],
+      obstacles: [
+        { x: W*0.18, y: H*0.18, w: 60*S, h: 36*S, color: '#4a4a6a', label: '🚗' },
+        { x: W*0.35, y: H*0.18, w: 60*S, h: 36*S, color: '#3d4a6a', label: '🚕' },
+        { x: W*0.55, y: H*0.18, w: 60*S, h: 36*S, color: '#5a3d6a', label: '🚙' },
+        { x: W*0.18, y: H*0.70, w: 60*S, h: 36*S, color: '#4a6a3d', label: '🚐' },
+        { x: W*0.35, y: H*0.70, w: 60*S, h: 36*S, color: '#6a4a3d', label: '🚌' },
+        { x: W*0.55, y: H*0.70, w: 60*S, h: 36*S, color: '#6a6a3d', label: '🚗' },
+      ],
+    },
+  ];
+}
+
+// ── Car physics ───────────────────────────────────────────────────────────────
+class Car {
+  constructor(x, y, angle) {
+    this.x = x; this.y = y; this.angle = angle;
+    this.vx = 0; this.vy = 0;
+    this.speed = 0;
+    this.W = Math.max(22, W * 0.054); // car width
+    this.H = this.W * 1.9;            // car height (length)
+    this.maxSpeed = W * 0.018;
+    this.accel    = W * 0.0014;
+    this.friction = 0.88;
+    this.turnRate = 0.042;
+    this.hitFlash = 0;
+  }
+
+  update(walls, obstacles) {
+    const driving   = isPressed('up');
+    const reversing = isPressed('down');
+    const turnLeft  = isPressed('left');
+    const turnRight = isPressed('right');
+
+    // Accelerate / decelerate
+    if (driving)   this.speed = Math.min(this.speed + this.accel, this.maxSpeed);
+    if (reversing) this.speed = Math.max(this.speed - this.accel, -this.maxSpeed * 0.6);
+    this.speed *= this.friction;
+    if (Math.abs(this.speed) < 0.001) this.speed = 0;
+
+    // Steering (only effective when moving)
+    if (Math.abs(this.speed) > 0.05) {
+      const dir = this.speed > 0 ? 1 : -1;
+      if (turnLeft)  this.angle -= this.turnRate * dir;
+      if (turnRight) this.angle += this.turnRate * dir;
+    }
+
+    const newX = this.x + Math.cos(this.angle) * this.speed;
+    const newY = this.y + Math.sin(this.angle) * this.speed;
+
+    // Collision vs walls & obstacles – AABB on car's bounding circle
+    const rCar = Math.max(this.W, this.H) * 0.5;
+    let blocked = false;
+
+    const allRects = [...walls, ...obstacles];
+    for (const r of allRects) {
+      const cx = Math.max(r.x, Math.min(newX, r.x + r.w));
+      const cy = Math.max(r.y, Math.min(newY, r.y + r.h));
+      const dx = newX - cx, dy = newY - cy;
+      if (dx * dx + dy * dy < rCar * rCar) {
+        blocked = true; break;
+      }
+    }
+
+    if (!blocked) {
+      this.x = newX;
+      this.y = newY;
+    } else {
+      // bounce back
+      this.speed *= -0.3;
+      this.hitFlash = 10;
+    }
+
+    if (this.hitFlash > 0) this.hitFlash--;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+
+    const hw = this.W / 2, hh = this.H / 2;
+
+    // Flash red on hit
+    const bodyColor = this.hitFlash > 0 && Math.floor(this.hitFlash / 2) % 2 === 0
+      ? C.red : '#e94560';
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(3, 4, hw + 2, hh + 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    roundRect(ctx, -hw, -hh, this.W, this.H, 5);
+    ctx.fill();
+
+    // Windshield (front = positive Y direction since angle=0 faces right)
+    ctx.fillStyle = 'rgba(120,220,255,0.6)';
+    ctx.beginPath();
+    roundRect(ctx, -hw * 0.7, -hh * 0.55, this.W * 0.7, this.H * 0.28, 3);
+    ctx.fill();
+
+    // Rear window
+    ctx.fillStyle = 'rgba(80,160,200,0.4)';
+    ctx.beginPath();
+    roundRect(ctx, -hw * 0.7, hh * 0.28, this.W * 0.7, this.H * 0.22, 3);
+    ctx.fill();
+
+    // Headlights
+    ctx.fillStyle = '#fffde7';
+    ctx.fillRect(-hw + 2, -hh + 3, 6, 5);
+    ctx.fillRect(hw - 8,  -hh + 3, 6, 5);
+
+    // Tail lights
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(-hw + 2, hh - 8, 6, 5);
+    ctx.fillRect(hw - 8,  hh - 8, 6, 5);
+
+    ctx.restore();
+  }
+}
+
+// Helper: rounded rectangle path
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// ── Rotated-rect corners ──────────────────────────────────────────────────────
+function rotatedCorners(x, y, w, h, angle) {
+  const hw = w / 2, hh = h / 2;
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return [
+    { x: x + cos*(-hw) - sin*(-hh), y: y + sin*(-hw) + cos*(-hh) },
+    { x: x + cos*( hw) - sin*(-hh), y: y + sin*( hw) + cos*(-hh) },
+    { x: x + cos*( hw) - sin*( hh), y: y + sin*( hw) + cos*( hh) },
+    { x: x + cos*(-hw) - sin*( hh), y: y + sin*(-hw) + cos*( hh) },
+  ];
+}
+
+// ── SAT overlap (for car–target) ──────────────────────────────────────────────
+function satOverlap(carsA, carsB) {
+  function axes(pts) {
+    const ax = [];
+    for (let i = 0; i < pts.length; i++) {
+      const n = pts[(i + 1) % pts.length];
+      const edge = { x: n.x - pts[i].x, y: n.y - pts[i].y };
+      ax.push({ x: -edge.y, y: edge.x });
+    }
+    return ax;
+  }
+  function project(pts, ax) {
+    const dots = pts.map(p => p.x * ax.x + p.y * ax.y);
+    return { min: Math.min(...dots), max: Math.max(...dots) };
+  }
+  for (const ax of [...axes(carsA), ...axes(carsB)]) {
+    const pA = project(carsA, ax), pB = project(carsB, ax);
+    if (pA.max < pB.min || pB.max < pA.min) return false;
+  }
+  return true;
+}
+
+// ── Parking accuracy ──────────────────────────────────────────────────────────
+function parkingAccuracy(car, target) {
+  // Position offset (center distance)
+  const dx = car.x - (target.x + target.w / 2);
+  const dy = car.y - (target.y + target.h / 2);
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const maxDist = Math.max(target.w, target.h) * 0.3;
+
+  // Angle diff
+  let aDiff = Math.abs(car.angle - target.angle) % (Math.PI * 2);
+  if (aDiff > Math.PI) aDiff = Math.PI * 2 - aDiff;
+  const maxAngle = Math.PI / 6; // 30°
+
+  const posScore   = Math.max(0, 1 - dist / maxDist);
+  const angleScore = Math.max(0, 1 - aDiff / maxAngle);
+  return Math.round((posScore * 0.6 + angleScore * 0.4) * 100);
+}
+
+// ── Draw helpers ──────────────────────────────────────────────────────────────
+function drawGround() {
+  // Base asphalt
+  ctx.fillStyle = C.asphalt;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines (subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+}
+
+function drawWalls(walls) {
+  walls.forEach(r => {
+    const grad = ctx.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h);
+    grad.addColorStop(0, '#3a3a5a');
+    grad.addColorStop(1, '#2a2a4a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+
+    // Highlight edge
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+  });
+}
+
+function drawTarget(target, pulse) {
+  const { x, y, w, h, angle } = target;
+  const cx = x + w / 2, cy = y + h / 2;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+
+  // Pulsing glow
+  const alpha = 0.15 + 0.12 * pulse;
+  ctx.fillStyle = `rgba(6,214,160,${alpha})`;
+  ctx.beginPath();
+  roundRect(ctx, -w/2 - 6, -h/2 - 6, w + 12, h + 12, 8);
+  ctx.fill();
+
+  // Spot border
+  ctx.strokeStyle = C.green;
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([8, 5]);
+  ctx.beginPath();
+  roundRect(ctx, -w/2, -h/2, w, h, 4);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // P label
+  ctx.fillStyle = C.green;
+  ctx.font = `bold ${Math.round(h * 0.28)}px Segoe UI`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('P', 0, 0);
+
+  ctx.restore();
+}
+
+function drawObstacle(obs) {
+  ctx.fillStyle = obs.color;
+  ctx.beginPath();
+  roundRect(ctx, obs.x, obs.y, obs.w, obs.h, 5);
+  ctx.fill();
+
+  // Roof detail
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  roundRect(ctx, obs.x + obs.w*0.1, obs.y + obs.h*0.15, obs.w*0.8, obs.h*0.7, 3);
+  ctx.fill();
+
+  // Emoji icon
+  ctx.font = `${Math.round(obs.h * 0.55)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(obs.label, obs.x + obs.w / 2, obs.y + obs.h / 2);
+}
+
+function drawSpeedIndicator(speed, maxSpeed) {
+  const pct = Math.abs(speed) / maxSpeed;
+  const bw = 60, bh = 8;
+  const bx = W - bw - 16, by = H - 24;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  roundRect(ctx, bx - 4, by - 4, bw + 8, bh + 8, 4);
+  ctx.fill();
+
+  ctx.fillStyle = pct > 0.7 ? C.red : (pct > 0.4 ? C.yellow : C.green);
+  ctx.beginPath();
+  roundRect(ctx, bx, by, bw * pct, bh, 3);
+  ctx.fill();
+
+  ctx.font = '10px Segoe UI';
+  ctx.fillStyle = '#aaa';
+  ctx.textAlign = 'right';
+  ctx.fillText('vel', bx - 6, by + 7);
+}
+
+// ── Mini-map / accuracy meter ─────────────────────────────────────────────────
+function drawAccuracyMeter(acc) {
+  if (acc === null) return;
+  const x = 16, y = H - 40, bw = 80, bh = 10;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  roundRect(ctx, x - 4, y - 16, bw + 8, bh + 22, 4);
+  ctx.fill();
+
+  ctx.font = '10px Segoe UI';
+  ctx.fillStyle = '#aaa';
+  ctx.textAlign = 'left';
+  ctx.fillText('precisión', x, y - 4);
+
+  ctx.fillStyle = '#333';
+  ctx.beginPath();
+  roundRect(ctx, x, y, bw, bh, 3);
+  ctx.fill();
+
+  const color = acc >= 80 ? C.green : (acc >= 50 ? C.yellow : C.red);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  roundRect(ctx, x, y, bw * acc / 100, bh, 3);
+  ctx.fill();
+}
+
+// ── Game state ────────────────────────────────────────────────────────────────
+let gameRunning = false;
+let currentLevel = 0;
+let score = 0;
+let hits = 0;
+let timeLeft = 60;
+let timerInterval = null;
+let pulse = 0;
+let levels = [];
+let level = null;
+let car = null;
+let parkedTime = 0; // frames inside target
+let accuracy = null;
+let raf = null;
+
+function init(lvlIndex) {
+  levels = makeLevels();
+  currentLevel = lvlIndex;
+  level = levels[lvlIndex];
+  car = new Car(level.carX, level.carY, level.carAngle);
+  timeLeft = level.time;
+  parkedTime = 0;
+  accuracy = null;
+  updateHUD();
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timeLeft--;
+    updateHUD();
+    if (timeLeft <= 0) onTimesUp();
+  }, 1000);
+}
+
+function updateHUD() {
+  document.getElementById('h-time').textContent  = timeLeft;
+  document.getElementById('h-level').textContent = currentLevel + 1;
+  document.getElementById('h-score').textContent = score;
+  document.getElementById('h-hits').textContent  = hits;
+}
+
+function showScreen(id) {
+  ['start-screen','win-screen','lose-screen'].forEach(s => {
+    document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+  });
+}
+
+function onTimesUp() {
+  clearInterval(timerInterval);
+  gameRunning = false;
+  document.getElementById('lose-score').textContent = score;
+  showScreen('lose-screen');
+}
+
+function onParked() {
+  clearInterval(timerInterval);
+  gameRunning = false;
+
+  // Stars based on time remaining & hits
+  const timeBonus  = timeLeft / level.time;
+  const hitPenalty = Math.min(hits * 0.15, 0.45);
+  const totalRating = Math.max(0, timeBonus - hitPenalty);
+
+  let stars = totalRating >= 0.6 ? 3 : (totalRating >= 0.3 ? 2 : 1);
+  const levelPoints = stars * 100 + timeLeft * 5;
+  score += levelPoints;
+  updateHUD();
+
+  document.getElementById('win-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const isLast = currentLevel >= levels.length - 1;
+  document.getElementById('win-msg').textContent = isLast
+    ? `¡Completaste todos los niveles! +${levelPoints} puntos`
+    : `+${levelPoints} puntos. Avanzando…`;
+
+  document.getElementById('next-btn').textContent = isLast ? '🏆 Jugar de nuevo' : 'Siguiente nivel ▶';
+  showScreen('win-screen');
+}
+
+// ── Main loop ─────────────────────────────────────────────────────────────────
+let prevHits = 0;
+
+function loop() {
+  raf = requestAnimationFrame(loop);
+  if (!gameRunning) return;
+
+  pulse = Math.sin(Date.now() / 400);
+
+  // Update car
+  car.update(level.walls, level.obstacles);
+
+  // Detect hits
+  if (car.hitFlash === 9) { // just triggered
+    hits++;
+    updateHUD();
+  }
+
+  // Check if inside target (SAT)
+  const carCorners = rotatedCorners(car.x, car.y, car.W * 0.9, car.H * 0.9, car.angle);
+  const tgt = level.target;
+  const tgtCorners = rotatedCorners(tgt.x + tgt.w/2, tgt.y + tgt.h/2, tgt.w, tgt.h, tgt.angle);
+  const inside = satOverlap(carCorners, tgtCorners);
+
+  if (inside) {
+    accuracy = parkingAccuracy(car, tgt);
+    if (accuracy >= 45 && Math.abs(car.speed) < 0.5) {
+      parkedTime++;
+    } else {
+      parkedTime = 0;
+    }
+    if (parkedTime >= 60) onParked(); // ~1 second parked steady
+  } else {
+    parkedTime = 0;
+    accuracy = null;
+  }
+
+  // ── Draw ──────────────────────────────────────────────────────
+  drawGround();
+  drawTarget(tgt, pulse);
+  drawWalls(level.walls);
+  level.obstacles.forEach(drawObstacle);
+  car.draw();
+  drawSpeedIndicator(car.speed, car.maxSpeed);
+  drawAccuracyMeter(accuracy);
+
+  // Parking progress bar (center top) when close
+  if (inside && parkedTime > 0) {
+    const pw = 160, ph = 12;
+    const px = (W - pw) / 2, py = 18;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    roundRect(ctx, px - 4, py - 4, pw + 8, ph + 8, 5); ctx.fill();
+    ctx.fillStyle = C.green;
+    roundRect(ctx, px, py, pw * (parkedTime / 60), ph, 3); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText('¡Aparcando…!', W / 2, py + ph + 16);
+  }
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+document.getElementById('start-btn').addEventListener('click', () => {
+  score = 0; hits = 0;
+  showScreen(null);
+  gameRunning = true;
+  init(0);
+  if (!raf) loop();
+});
+
+document.getElementById('next-btn').addEventListener('click', () => {
+  const levels = makeLevels();
+  const next = (currentLevel + 1) % levels.length;
+  showScreen(null);
+  gameRunning = true;
+  init(next);
+});
+
+document.getElementById('retry-btn').addEventListener('click', () => {
+  showScreen(null);
+  gameRunning = true;
+  init(currentLevel);
+});
+
+// Start the render loop (idle until game starts)
+loop();
+</script>
+</body>
+</html>
