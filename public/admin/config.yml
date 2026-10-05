@@ -5,14 +5,4 @@ backend:
 media_folder: "images"
 public_folder: "/images"
 
-collections:
-  - name: "gallery"
-    label: "Galería"
-    folder: "content/gallery"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    fields:
-      - {label: "Imagen", name: "image", widget: "image", required: true}
-      - {label: "Título", name: "title", widget: "string", required: true}
-      - {label: "Fecha", name: "date", widget: "datetime", format: "DD/MM/YYYY", date_format: "DD/MM/YYYY"}
-      - {label: "Descripción", name: "body", widget: "markdown", required: false}
+collections: []
