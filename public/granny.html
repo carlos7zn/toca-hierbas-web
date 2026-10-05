@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Granny Original · Toca Hierbas</title>
+<meta name="description" content="Escapa de la casa de la abuela en Granny. Horror y sigilo en WebGL. Versión original completa." />
+<meta name="theme-color" content="#0f1210" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z' fill='%238aab5c'/%3E%3Cpath d='M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.granny-page { margin: 0; min-height: 100vh; overflow: hidden; background: #0a0a0a; font-family: Inter, sans-serif; color: #e8e8e8; touch-action: manipulation; }
+#unity-container { position: absolute; width: 100%; height: 100%; left: 0; top: 0; z-index: 1; }
+#unity-canvas { position: absolute; width: 100%; height: 100%; display: block; }
+#unity-loading-bar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; height: 18px; background: rgba(15,18,16,0.95); border: 2px solid #8aab5c; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; box-shadow: 0 0 30px rgba(138,171,92,0.3); z-index: 10; }
+#unity-logo { width: 120px; height: auto; opacity: 0.9; }
+#unity-progress-bar-empty { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+#unity-progress-bar-full { height: 100%; width: 0%; background: linear-gradient(90deg, #8aab5c, #a6c47c); border-radius: 4px; transition: width 0.2s ease; }
+#unity-warning { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(220, 50, 50, 0.9); color: white; padding: 12px 24px; border-radius: 8px; display: none; z-index: 100; font-size: 0.9rem; max-width: 90vw; text-align: center; }
+#unity-loading-bar.hidden { display: none !important; }
+.game-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(15,18,16,0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.game-header .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+.game-header .back-btn:hover { border-color: var(--accent); color: var(--accent-strong); background: var(--surface-elevated); }
+.game-header h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; color: var(--text); }
+.game-header .muted { color: var(--text-dim); font-size: 0.8rem; }
+.fullscreen-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 50; padding: 12px 20px; background: linear-gradient(135deg, #8aab5c, #a6c47c); border: none; border-radius: 10px; color: #0f1210; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 20px rgba(138,171,92,0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px; }
+.fullscreen-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(138,171,92,0.5); }
+.fullscreen-toggle:active { transform: translateY(1px); }
+@media (max-width: 768px) {
+  .game-header { padding: 10px 16px; }
+  .game-header h1 { font-size: 1.1rem; }
+  .fullscreen-toggle { bottom: 12px; right: 12px; padding: 10px 16px; font-size: 0.85rem; }
+}
+</style>
+</head>
+<body class="granny-page">
+
+<div class="bg-atmosphere" aria-hidden="true"></div>
+<div class="particles" aria-hidden="true" id="particles"></div>
+<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+<header class="game-header">
+  <a href="juego.html" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Biblioteca</span>
+  </a>
+  <h1>Granny Original 👵</h1>
+  <span class="muted">Horror · Sigilo · WebGL</span>
+</header>
+
+<div id="unity-container">
+  <canvas id="unity-canvas"></canvas>
+  <div id="unity-loading-bar">
+    <div id="unity-logo">
+      <svg viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <text x="100" y="52" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#8aab5c">GRANNY</text>
+        <text x="100" y="70" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#a6c47c" opacity="0.8">Original WebGL Port</text>
+      </svg>
+    </div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+    <div style="font-size:0.8rem;color:var(--text-dim);font-family:Inter,sans-serif;">Cargando assets...</div>
+  </div>
+  <div id="unity-warning"></div>
+</div>
+
+<button class="fullscreen-toggle" id="fs-toggle" aria-label="Pantalla completa">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+  <span>Pantalla completa</span>
+</button>
+
+<footer class="wrap" style="position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(15,18,16,0.95);border-top:1px solid var(--border);padding:8px 24px;">
+  <p class="footer-legal" style="margin:0;font-size:0.75rem;text-align:center;">
+    Granny Original por <a href="https://dvloper.com" target="_blank" rel="noopener" style="color:var(--accent-strong);">DVloper</a> · Port WebGL por <a href="https://github.com/gru6nny" target="_blank" rel="noopener" style="color:var(--accent-strong);">Gru6nny</a> · En Toca Hierbas
+  </p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+const SDK_OPTIONS = {
+  gameId: "jp112o3o4hzgrnc7zaewjkrfk282pul8",
+  onEvent: function(e) {
+    switch (e.name) {
+      case "SDK_GAME_PAUSE":
+        console.log("Juego pausado - anuncios");
+        if (window.myGameInstance) window.myGameInstance.SendMessage('AudioManager', 'MuteAudio');
+        break;
+      case "SDK_GAME_START":
+        console.log("Juego reanudado");
+        if (window.myGameInstance) window.myGameInstance.SendMessage('AudioManager', 'UnmuteAudio');
+        break;
+      case "SDK_READY":
+        console.log("SDK listo");
+        break;
+    }
+  }
+};
+(function(d,s,id){var e=d.getElementsByTagName(s)[0];d.getElementById(id)||(e=e=d.createElement(s),e.id=id,e.src="https://cdn.jsdelivr.net/gh/testamalame/sef@main/sedk.js",e.parentNode.insertBefore(e,e))})(document,"script","gamemonetize-sdk");
+
+let myGameInstance = null;
+let isAdShown = false;
+let isFullscreen = false;
+
+function unityShowBanner(msg, type) {
+  const wb = document.getElementById("unity-warning");
+  function upd(){ wb.style.display = wb.children.length ? 'block' : 'none'; }
+  const div = document.createElement('div');
+  div.innerHTML = msg;
+  wb.appendChild(div);
+  if(type==='error') div.style = 'background:#e04;padding:10px;border-radius:6px;margin:4px 0;';
+  else if(type==='warning') { div.style = 'background:#fa0;padding:10px;border-radius:6px;margin:4px 0;'; setTimeout(()=>{wb.removeChild(div);upd();},5000); }
+  upd();
+}
+
+function showAdOnInteraction() {
+  if (!isAdShown && window.sdk && typeof window.sdk.showBanner === 'function') {
+    window.sdk.showBanner();
+    isAdShown = true;
+  }
+}
+
+async function mergeUnityWebFiles(baseUrl, filePrefix, totalParts, extension) {
+  const partUrls = Array.from({length: totalParts}, (_,i)=>`${baseUrl}/${filePrefix}_part${i+1}.${extension}`);
+  const buffers = [];
+  const progressBarFull = document.getElementById("unity-progress-bar-full");
+  for (let i = 0; i < totalParts; i++) {
+    const res = await fetch(partUrls[i]);
+    if (!res.ok) throw new Error(`Failed to load ${partUrls[i]}`);
+    buffers.push(await res.arrayBuffer());
+    if (progressBarFull) progressBarFull.style.width = `${((i+1)/totalParts)*100}%`;
+  }
+  const totalLen = buffers.reduce((a,b)=>a+b.byteLength,0);
+  const combined = new Uint8Array(totalLen);
+  let off = 0;
+  buffers.forEach(b=>{ combined.set(new Uint8Array(b), off); off+=b.byteLength; });
+  return combined;
+}
+
+async function initializeGame() {
+  try {
+    const buildUrl = "https://cdn.jsdelivr.net/gh/gru6nny/ohd@main/Build";
+    const loaderUrl = buildUrl + "/Granny.loader.js";
+
+    const [dataBuffer, wasmBuffer] = await Promise.all([
+      mergeUnityWebFiles(buildUrl, "Granny", 2, "data"),
+      mergeUnityWebFiles(buildUrl, "Granny", 2, "wasm")
+    ]);
+
+    const dataBlobUrl = URL.createObjectURL(new Blob([dataBuffer], {type:"application/octet-stream"}));
+    const wasmBlobUrl = URL.createObjectURL(new Blob([wasmBuffer], {type:"application/octet-stream"}));
+
+    const config = {
+      dataUrl: dataBlobUrl,
+      frameworkUrl: buildUrl + "/Granny.framework.js",
+      codeUrl: wasmBlobUrl,
+      streamingAssetsUrl: "https://cdn.jsdelivr.net/gh/gru6nny/ohd@main/StreamingAssets",
+      companyName: "Anastasia Kazantseva",
+      productName: "Granny",
+      productVersion: "1.0",
+      showBanner: unityShowBanner,
+    };
+
+    const script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        const pbf = document.getElementById("unity-progress-bar-full");
+        if (pbf) pbf.style.width = (100 * progress) + "%";
+      }).then((unityInstance) => {
+        window.myGameInstance = myGameInstance = unityInstance;
+        const lb = document.getElementById("unity-loading-bar");
+        if (lb) lb.classList.add("hidden");
+        canvas.addEventListener('pointerdown', showAdOnInteraction);
+        canvas.addEventListener('touchstart', showAdOnInteraction);
+      }).catch((msg) => {
+        alert("Error cargando el juego: " + msg);
+        console.error(msg);
+      });
+    };
+    document.body.appendChild(script);
+  } catch (err) {
+    console.error("Fallo init:", err);
+    const lb = document.getElementById("unity-loading-bar");
+    if (lb) lb.innerHTML = '<div style="color:#e04;padding:16px;text-align:center;">Error cargando el juego. Recarga la página.</div>';
+  }
+}
+
+const canvas = document.getElementById("unity-canvas");
+initializeGame();
+
+const fsBtn = document.getElementById("fs-toggle");
+fsBtn.addEventListener("click", async () => {
+  if (!document.fullscreenElement) {
+    try {
+      await document.documentElement.requestFullscreen();
+      fsBtn.querySelector('span').textContent = "Salir pantalla completa";
+      fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 14h6v-4M4 10h6v4M20 14h-6v-4M20 10h-6v4"/></svg><span>Salir pantalla completa</span>';
+    } catch(e) { console.warn("Fullscreen denied:", e); }
+  } else {
+    await document.exitFullscreen();
+    fsBtn.querySelector('span').textContent = "Pantalla completa";
+    fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>Pantalla completa</span>';
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    fsBtn.querySelector('span').textContent = "Pantalla completa";
+    fsBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>Pantalla completa</span>';
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+});
+</script>
+</body>
+</html>
