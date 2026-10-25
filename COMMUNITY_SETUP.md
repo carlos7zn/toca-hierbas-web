@@ -6,8 +6,8 @@ La web usa el proyecto Supabase `toca-hierbas` (`rfcifojiysmiblyfeaer`) para cue
 
 1. En Supabase → Authentication → URL Configuration, poner **Site URL** en `https://toca-hierbas.vercel.app` y añadir `https://toca-hierbas.vercel.app/comunidad.html` a **Redirect URLs**. Mantener activada la confirmación de correo en Authentication → Providers → Email.
 2. En Discord Developer Portal, crear una aplicación para Toca Hierbas. En OAuth2, añadir exactamente `https://toca-hierbas.vercel.app/api/discord-callback` como redirect URI. El flujo solicita los scopes `identify` y `guilds.members.read`; no necesita bot.
-3. En las variables de entorno del proyecto Vercel `toca-hierbas`, añadir `DISCORD_CLIENT_ID` y `DISCORD_CLIENT_SECRET` desde esa aplicación. Guardar el secreto como variable cifrada.
-4. En Supabase → Project Settings → API Keys, copiar la **service role key** a Vercel como `SUPABASE_SERVICE_ROLE_KEY`, cifrada. Nunca poner esa clave en GitHub ni en `public/`.
+3. En las variables de entorno **Production** del proyecto Vercel `toca-hierbas`, añadir `DISCORD_CLIENT_ID` y `DISCORD_CLIENT_SECRET` desde esa aplicación. Guardar el secreto como variable cifrada.
+4. En Supabase → Project Settings → API Keys, copiar la **service role key** a Vercel como `SUPABASE_SERVICE_ROLE_KEY`, cifrada y **solo para Production**. Nunca poner esa clave en GitHub, en una preview ni en `public/`.
 
 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL`, `DISCORD_GUILD_ID` y `OAUTH_STATE_SECRET` ya están configuradas en Vercel para Production y Preview. El flujo OAuth usa la URL de producción; una preview con dominio distinto puede mostrar el diseño y el muro, pero la vinculación con Discord se comprueba en el dominio de producción.
 
