@@ -54,7 +54,7 @@ create policy "Read own Discord link" on public.discord_links
 
 create policy "Read member profiles" on public.profiles
   for select to authenticated using (
-    id = (select auth.uid()) or exists (
+    exists (
       select 1 from public.discord_links d
       where d.user_id = (select auth.uid()) and d.checked_until > now()
     )
@@ -72,7 +72,7 @@ create policy "Update own profile" on public.profiles
 
 create policy "Read member posts" on public.posts
   for select to authenticated using (
-    author_id = (select auth.uid()) or exists (
+    exists (
       select 1 from public.discord_links d
       where d.user_id = (select auth.uid()) and d.checked_until > now()
     )
@@ -106,7 +106,7 @@ create policy "Unlike own post" on public.post_likes
 
 create policy "Read member comments" on public.post_comments
   for select to authenticated using (
-    author_id = (select auth.uid()) or exists (
+    exists (
       select 1 from public.discord_links d
       where d.user_id = (select auth.uid()) and d.checked_until > now()
     )
@@ -133,11 +133,9 @@ on conflict (id) do update set
 
 create policy "Members read media" on storage.objects
   for select to authenticated using (
-    bucket_id = 'post-media' and (
-      (storage.foldername(name))[1] = (select auth.uid())::text or exists (
-        select 1 from public.discord_links d
-        where d.user_id = (select auth.uid()) and d.checked_until > now()
-      )
+    bucket_id = 'post-media' and exists (
+      select 1 from public.discord_links d
+      where d.user_id = (select auth.uid()) and d.checked_until > now()
     )
   );
 create policy "Members upload own media" on storage.objects
