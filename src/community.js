@@ -8,13 +8,12 @@ const $ = (id) => document.getElementById(id);
 const views = ['auth-view', 'discord-view', 'profile-view', 'community-view'];
 const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm']);
 const maxFileSize = 25 * 1024 * 1024;
-let mode = 'login';
-let recoveryMode = false;
 let user = null;
 let profile = null;
 let membership = null;
 let feedLoading = false;
 let oldestPostTime = null;
+let attemptedDiscordToken = null;
 
 function showView(id) {
   $('loading').hidden = true;
@@ -36,42 +35,17 @@ function make(tag, className, text) {
   return element;
 }
 
-function setMode(next) {
-  mode = next;
-  $('tab-login').classList.toggle('active', mode === 'login');
-  $('tab-signup').classList.toggle('active', mode === 'signup');
-  $('tab-login').setAttribute('aria-selected', String(mode === 'login'));
-  $('tab-signup').setAttribute('aria-selected', String(mode === 'signup'));
-  $('auth-title').textContent = mode === 'login' ? 'Qué bueno verte.' : 'Haz sitio en el prado.';
-  $('auth-caption').textContent = mode === 'login' ? 'Entra para ver lo que está pasando.' : 'Te enviaremos un correo para confirmar tu cuenta.';
-  $('auth-submit').firstChild.textContent = mode === 'login' ? 'Iniciar sesión ' : 'Crear mi cuenta ';
-  $('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-  $('forgot-password').hidden = mode !== 'login';
-  message('');
-}
-
 async function render() {
   if (!supabase) {
     showView('auth-view');
-    $('auth-form').hidden = true;
-    document.querySelector('.auth-tabs').hidden = true;
+    $('auth-discord').hidden = true;
     message('La comunidad aún no está conectada a Supabase. Vuelve pronto.', true);
-    return;
-  }
-  if (recoveryMode) {
-    showView('auth-view');
-    $('auth-form').hidden = true;
-    $('reset-form').hidden = false;
-    document.querySelector('.auth-tabs').hidden = true;
     return;
   }
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     user = null;
     showView('auth-view');
-    $('auth-form').hidden = false;
-    $('reset-form').hidden = true;
-    document.querySelector('.auth-tabs').hidden = false;
     return;
   }
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -90,6 +64,13 @@ async function render() {
   }
   membership = link;
   if (!link || new Date(link.checked_until).getTime() <= Date.now()) {
+    if (session.provider_token && attemptedDiscordToken !== session.provider_token) {
+      attemptedDiscordToken = session.provider_token;
+      showView('discord-view');
+      $('discord-detail').textContent = 'Comprobando tu pertenencia al servidor…';
+      const verified = await verifyDiscord(session);
+      if (verified) return render();
+    }
     $('discord-detail').textContent = link ? 'Tu comprobación ha caducado. Puedes renovarla en un clic.' : '';
     showView('discord-view');
     return;
@@ -113,22 +94,37 @@ async function render() {
   await loadFeed();
 }
 
-async function startDiscord() {
-  const button = $('connect-discord');
+async function startDiscord(button) {
   button.disabled = true;
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Inicia sesión de nuevo.');
-    const response = await fetch('/api/discord-start', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${session.access_token}` },
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${location.origin}/comunidad.html`,
+        scopes: 'identify guilds.members.read',
+      },
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'No pudimos abrir Discord.');
-    window.location.assign(data.url);
+    if (error) throw error;
   } catch (error) {
     message(error.message, true);
     button.disabled = false;
+  }
+}
+
+async function verifyDiscord(session) {
+  try {
+    const response = await fetch('/api/discord-verify', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ providerToken: session.provider_token }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'No pudimos comprobar tu acceso.');
+    message('Discord verificado. ¡Bienvenido al prado!');
+    return true;
+  } catch (error) {
+    message(error.message, true);
+    return false;
   }
 }
 
@@ -309,68 +305,9 @@ async function publish(event) {
   }
 }
 
-function callbackMessage() {
-  const status = new URLSearchParams(location.search).get('discord');
-  if (!status) return;
-  const messages = {
-    ok: 'Discord verificado. ¡Bienvenido al prado!',
-    no_miembro: 'No encontramos tu cuenta en el servidor de Toca Hierbas. Únete a Discord y vuelve a verificar.',
-    discord_en_uso: 'Ese Discord ya está vinculado a otra cuenta.',
-    cancelado: 'Has cancelado la conexión con Discord.',
-    estado: 'La verificación ha caducado. Inténtalo de nuevo.',
-    configuracion: 'La conexión con Discord aún no está configurada.',
-    guardar: 'No hemos podido guardar la verificación. Inténtalo de nuevo.',
-    discord: 'Discord no ha podido verificar tu cuenta. Inténtalo de nuevo.',
-  };
-  message(messages[status] || 'No hemos podido verificar Discord.', status !== 'ok');
-  history.replaceState({}, '', location.pathname);
-}
-
-$('tab-login').addEventListener('click', () => setMode('login'));
-$('tab-signup').addEventListener('click', () => setMode('signup'));
-$('auth-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!supabase) return;
-  const email = $('email').value.trim();
-  const password = $('password').value;
-  $('auth-submit').disabled = true;
-  try {
-    if (mode === 'signup') {
-      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}/comunidad.html` } });
-      if (error) throw error;
-      message('Revisa tu correo y pulsa el enlace de confirmación. Después podrás iniciar sesión.');
-      setMode('login');
-      message('Revisa tu correo y pulsa el enlace de confirmación. Después podrás iniciar sesión.');
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      message('');
-      await render();
-    }
-  } catch (error) {
-    message(error.message, true);
-  } finally {
-    $('auth-submit').disabled = false;
-  }
-});
-$('forgot-password').addEventListener('click', async () => {
-  if (!supabase) return;
-  const email = $('email').value.trim();
-  if (!email || !$('email').checkValidity()) return message('Escribe primero tu correo electrónico.', true);
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/comunidad.html?reset=1` });
-  message(error ? error.message : 'Te hemos enviado un enlace para cambiar la contraseña.', Boolean(error));
-});
-$('reset-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const { error } = await supabase.auth.updateUser({ password: $('new-password').value });
-  if (error) return message(error.message, true);
-  recoveryMode = false;
-  history.replaceState({}, '', location.pathname);
-  message('Contraseña actualizada.');
-  await render();
-});
-$('connect-discord').addEventListener('click', startDiscord);
-$('recheck-discord').addEventListener('click', startDiscord);
+$('auth-discord').addEventListener('click', () => startDiscord($('auth-discord')));
+$('connect-discord').addEventListener('click', () => startDiscord($('connect-discord')));
+$('recheck-discord').addEventListener('click', () => startDiscord($('recheck-discord')));
 $('profile-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const displayName = $('display-name').value.trim();
@@ -394,15 +331,6 @@ document.querySelectorAll('.sign-out').forEach((button) => button.addEventListen
   await render();
 }));
 
-if (supabase) {
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      recoveryMode = true;
-      render();
-    }
-  });
-}
-callbackMessage();
 render().catch((error) => {
   showView('auth-view');
   message(error.message, true);

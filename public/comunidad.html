@@ -42,45 +42,27 @@
       <div class="entry-story">
         <div class="story-number">01 <span>—</span> ENTRA</div>
         <h2>Tu sitio entre<br>la hierba.</h2>
-        <p>Crea tu cuenta, confirma el correo y conecta Discord. Así sabemos que estás dentro del servidor antes de enseñar lo que comparte el grupo.</p>
+        <p>Entra con tu cuenta de Discord. Comprobaremos que formas parte del servidor antes de mostrar lo que comparte el grupo.</p>
         <ol class="steps">
-          <li><span>01</span> Crea tu cuenta con correo</li>
-          <li><span>02</span> Confirma el enlace que te enviamos</li>
-          <li><span>03</span> Verifica que estás en Discord</li>
+          <li><span>01</span> Entra con Discord</li>
+          <li><span>02</span> Comprobamos que estás en el servidor</li>
+          <li><span>03</span> Comparte momentos con el grupo</li>
         </ol>
       </div>
       <div class="auth-card">
-        <div class="auth-tabs" role="tablist" aria-label="Acceso">
-          <button id="tab-login" class="active" type="button" role="tab" aria-selected="true">Entrar</button>
-          <button id="tab-signup" type="button" role="tab" aria-selected="false">Crear cuenta</button>
-        </div>
-        <form id="auth-form">
-          <h2 id="auth-title">Qué bueno verte.</h2>
-          <p id="auth-caption">Entra para ver lo que está pasando.</p>
-          <label for="email">Correo electrónico</label>
-          <input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@email.com">
-          <label for="password">Contraseña</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Mínimo 8 caracteres">
-          <button id="auth-submit" class="button button-primary" type="submit">Iniciar sesión <span aria-hidden="true">↗</span></button>
-          <button id="forgot-password" class="text-button" type="button">¿Has olvidado la contraseña?</button>
-        </form>
-        <form id="reset-form" hidden>
-          <h2>Nueva contraseña</h2>
-          <p>Elige una contraseña de al menos 8 caracteres.</p>
-          <label for="new-password">Nueva contraseña</label>
-          <input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
-          <button class="button button-primary" type="submit">Guardar contraseña</button>
-        </form>
-        <p class="auth-footnote">Al crear una cuenta aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
+        <h2>Qué bueno verte.</h2>
+        <p>Tu cuenta de la comunidad se crea al entrar con Discord. No necesitas contraseña ni confirmar un correo aquí.</p>
+        <button id="auth-discord" class="button button-primary" type="button">Continuar con Discord <span aria-hidden="true">↗</span></button>
+        <p class="auth-footnote">Al entrar aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
       </div>
     </section>
 
     <section id="discord-view" class="gate-card" hidden>
       <span class="gate-icon" aria-hidden="true">✳</span>
       <div>
-        <div class="story-number">02 — CONECTA DISCORD</div>
+        <div class="story-number">02 — COMPROBAMOS TU ACCESO</div>
         <h2>Ya casi estás dentro.</h2>
-        <p>Tu correo está confirmado. Conecta Discord para comprobar que formas parte de Toca Hierbas. Repetimos la comprobación cada 24 horas.</p>
+        <p>Necesitamos comprobar que tu cuenta de Discord sigue en Toca Hierbas. Renovamos esta comprobación cada 24 horas.</p>
         <p id="discord-detail" class="gate-detail"></p>
         <button id="connect-discord" class="button button-primary" type="button">Verificar mi Discord <span aria-hidden="true">↗</span></button>
         <button class="text-button sign-out" type="button">Cerrar sesión</button>
