@@ -5,8 +5,8 @@ La web usa el proyecto Supabase `toca-hierbas` (`rfcifojiysmiblyfeaer`) para cue
 ## Configuración de las consolas
 
 1. **Hecho:** En Supabase → Authentication → URL Configuration, **Site URL** es `https://toca-hierbas.vercel.app` y **Redirect URLs** incluye `https://toca-hierbas.vercel.app/comunidad.html`.
-2. **Pendiente:** Activar el proveedor Discord en Supabase Auth con la aplicación `toca hierbas web` (`1564028954086609066`) y añadir `https://rfcifojiysmiblyfeaer.supabase.co/auth/v1/callback` a sus redirects. El acceso solicita `identify` y `guilds.members.read`; no necesita bot.
-3. **Pendiente:** Desactivar el proveedor de acceso por correo en Supabase Auth cuando Discord funcione, para que no haya un segundo método de registro sin la misma comprobación de identidad.
+2. **Hecho:** Discord está activado en Supabase Auth con la aplicación `toca hierbas web` (`1564028954086609066`) y `https://rfcifojiysmiblyfeaer.supabase.co/auth/v1/callback` está añadido a sus redirects. El acceso solicita `identify` y `guilds.members.read`; no necesita bot.
+3. **Hecho:** El proveedor de acceso por correo está desactivado en Supabase Auth. Solo Discord permite crear una cuenta o entrar.
 4. **Hecho:** Una **secret key** de Supabase está en Vercel como `SUPABASE_SECRET_KEY`, tipo Secret y **solo para Production**. Es la clave actual que sustituye a la antigua `service_role` y tiene los mismos permisos elevados. Nunca ponerla en GitHub, en una preview ni en `public/`.
 
 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL` y `DISCORD_GUILD_ID` ya están configuradas en Vercel para Production y Preview. El acceso OAuth se redirige al dominio de producción; una preview con dominio distinto puede mostrar el diseño, pero el recorrido completo debe probarse en producción.
