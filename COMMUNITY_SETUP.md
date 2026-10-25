@@ -5,8 +5,8 @@ La web usa el proyecto Supabase `toca-hierbas` (`rfcifojiysmiblyfeaer`) para cue
 ## Configuración de las consolas
 
 1. **Hecho:** En Supabase → Authentication → URL Configuration, **Site URL** es `https://toca-hierbas.vercel.app` y **Redirect URLs** incluye `https://toca-hierbas.vercel.app/comunidad.html`. La confirmación de correo está activada en Authentication → Providers → Email.
-2. En Discord Developer Portal, crear una aplicación para Toca Hierbas. En OAuth2, añadir exactamente `https://toca-hierbas.vercel.app/api/discord-callback` como redirect URI. El flujo solicita los scopes `identify` y `guilds.members.read`; no necesita bot.
-3. En las variables de entorno **Production** del proyecto Vercel `toca-hierbas`, añadir `DISCORD_CLIENT_ID` y `DISCORD_CLIENT_SECRET` desde esa aplicación. Guardar el secreto como variable cifrada.
+2. **Hecho:** La aplicación de Discord existente `toca hierbas web` (`1564028954086609066`) tiene `https://toca-hierbas.vercel.app/api/discord-callback` como redirect URI. El flujo solicita los scopes `identify` y `guilds.members.read`; no necesita bot.
+3. **Parcial:** `DISCORD_CLIENT_ID` ya está en las variables de entorno **Production** de Vercel. Falta `DISCORD_CLIENT_SECRET` desde esa aplicación, guardado como variable cifrada.
 4. En Supabase → Project Settings → API Keys, copiar una **secret key** a Vercel como `SUPABASE_SECRET_KEY`, cifrada y **solo para Production**. Es la clave actual que sustituye a la antigua `service_role` y tiene los mismos permisos elevados. Nunca ponerla en GitHub, en una preview ni en `public/`.
 5. En Supabase → Authentication → Emails → SMTP Settings, configurar un servicio SMTP propio y un remitente verificado antes de invitar a miembros. El SMTP de prueba de Supabase no entrega correos a direcciones ajenas al equipo del proyecto.
 
