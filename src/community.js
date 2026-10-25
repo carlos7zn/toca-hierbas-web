@@ -14,6 +14,7 @@ let user = null;
 let profile = null;
 let membership = null;
 let feedLoading = false;
+let oldestPostTime = null;
 
 function showView(id) {
   $('loading').hidden = true;
@@ -135,14 +136,17 @@ function formatDate(value) {
   return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
-async function loadFeed() {
+async function loadFeed(older = false) {
   if (feedLoading) return;
   feedLoading = true;
   $('feed-status').textContent = 'Cargando publicaciones…';
+  $('load-more').disabled = true;
   try {
-    const { data: posts, error } = await supabase.from('posts')
+    let query = supabase.from('posts')
       .select('id,author_id,body,media_path,media_type,created_at,profiles(display_name)')
       .order('created_at', { ascending: false }).limit(30);
+    if (older && oldestPostTime) query = query.lt('created_at', oldestPostTime);
+    const { data: posts, error } = await query;
     if (error) throw error;
     const ids = posts.map((post) => post.id);
     const [likesResult, commentsResult] = ids.length ? await Promise.all([
@@ -154,8 +158,8 @@ async function loadFeed() {
     const likes = likesResult.data || [];
     const comments = commentsResult.data || [];
     const feed = $('feed');
-    feed.replaceChildren();
-    if (!posts.length) {
+    if (!older) feed.replaceChildren();
+    if (!posts.length && !older) {
       const empty = make('div', 'empty-feed');
       empty.append(make('span', '', '✳'), make('h3', '', 'Aquí empieza todo.'), make('p', '', 'Sé la primera persona en compartir algo con el grupo.'));
       feed.append(empty);
@@ -166,12 +170,17 @@ async function loadFeed() {
       return renderPost(post, postLikes, postComments);
     }));
     feed.append(...cards);
-    $('feed-status').textContent = posts.length ? `${posts.length} ${posts.length === 1 ? 'publicación' : 'publicaciones'} recientes` : '';
+    if (posts.length) oldestPostTime = posts.at(-1).created_at;
+    else if (!older) oldestPostTime = null;
+    $('load-more').hidden = posts.length < 30;
+    const count = feed.querySelectorAll('.post').length;
+    $('feed-status').textContent = count ? `${count} ${count === 1 ? 'publicación' : 'publicaciones'} mostradas` : '';
   } catch (error) {
     $('feed-status').textContent = 'No hemos podido cargar el muro.';
     message(error.message, true);
   } finally {
     feedLoading = false;
+    $('load-more').disabled = false;
   }
 }
 
@@ -372,7 +381,8 @@ $('profile-form').addEventListener('submit', async (event) => {
   await render();
 });
 $('post-form').addEventListener('submit', publish);
-$('refresh-feed').addEventListener('click', loadFeed);
+$('refresh-feed').addEventListener('click', () => loadFeed());
+$('load-more').addEventListener('click', () => loadFeed(true));
 $('post-file').addEventListener('change', () => {
   const file = $('post-file').files[0];
   $('file-preview').hidden = !file;
