@@ -32,6 +32,7 @@
     <a href="equipo.html">Equipo</a>
     <a href="faq.html">FAQ</a>
     <a href="juego.html">Juegos</a>
+    <a href="comunidad.html">Comunidad</a>
     <a href="media.html">Media del Servidor</a>
   </div>
   <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" aria-pressed="false">
@@ -43,25 +44,25 @@
 
 <header class="page-hero wrap reveal up">
   <h1>Política de Privacidad</h1>
-  <p>Última actualización: <span id="policy-date"></span>. Tu privacidad nos importa.</p>
+  <p>Última actualización: 25 de octubre de 2026.</p>
 </header>
 
 <section class="wrap reveal up">
   <div class="list-row reveal left">
     <div class="label">¿Quiénes somos?</div>
-    <div class="desc">Toca Hierbas es una comunidad de gamers en español alojada en Discord. Esta web es solo una landing informativa y galería de capturas. No somos una empresa, no vendemos datos, no hay tracking oculto.</div>
+    <div class="desc">Toca Hierbas es una comunidad de jugadores en Discord. Esta web incluye un espacio privado donde los miembros pueden publicar y conversar. No vendemos datos personales.</div>
   </div>
   <div class="list-row reveal right">
     <div class="label">Qué datos recogemos</div>
-    <div class="desc"><strong>En esta web:</strong> solo lo que tú subas voluntariamente a la galería (imagen/video + nombre que elijas + caption). En <strong>Discord</strong>: se aplica la <a href="https://discord.com/privacy" target="_blank" rel="noopener">Política de Privacidad de Discord</a> — nosotros no tenemos acceso a tus mensajes privados, IP, email, etc.</div>
+    <div class="desc">Al crear una cuenta tratamos tu correo, nombre visible y datos necesarios para iniciar sesión. Si conectas Discord, guardamos tu identificador de Discord y la fecha hasta la que se ha comprobado tu pertenencia al servidor. También guardamos lo que publiques: textos, imágenes, vídeos, comentarios y «me gusta». La contraseña la gestiona Supabase; no la vemos en texto claro.</div>
   </div>
   <div class="list-row reveal left">
     <div class="label">Para qué los usamos</div>
-    <div class="desc">Mostrar tus capturas en la galería pública con el nombre que pusiste. Nada más. No hay newsletters, no hay anuncios, no hay perfiles de usuario.</div>
+    <div class="desc">Usamos estos datos para verificar el correo, limitar el acceso a miembros del Discord, mostrar el muro a esos miembros y permitirte gestionar tus publicaciones. No usamos el correo para newsletters.</div>
   </div>
   <div class="list-row reveal right">
     <div class="label">Cookies y almacenamiento local</div>
-    <div class="desc">Usamos <code>localStorage</code> en tu navegador para: recordar tu nombre de usuario en el admin, guardar capturas antes de que se publiquen, y preferencias de UI (partículas, scroll progress). No hay cookies de terceros, no hay Google Analytics, no hay Facebook Pixel.</div>
+    <div class="desc">Supabase guarda la sesión de acceso en el almacenamiento de tu navegador. La web también recuerda algunas preferencias de interfaz. Vercel, Supabase y Discord pueden tratar datos técnicos necesarios para prestar sus servicios; consulta sus respectivas políticas de privacidad.</div>
   </div>
   <div class="list-row reveal left">
     <div class="label">Discord Widget</div>
@@ -69,15 +70,15 @@
   </div>
   <div class="list-row reveal right">
     <div class="label">Tus derechos</div>
-    <div class="desc">Puedes pedir que borremos tu captura de la galería en cualquier momento (MD a un admin en Discord). Puedes limpiar tu <code>localStorage</code> desde el admin o en ajustes del navegador. No tenemos "cuentas" ni base de datos de usuarios.</div>
+    <div class="desc">Puedes borrar tus publicaciones desde el muro. Para pedir acceso, corrección o eliminación de tu cuenta y otros datos, contacta con un administrador por Discord o abre un ticket en #soporte.</div>
   </div>
   <div class="list-row reveal left">
     <div class="label">Menores de edad</div>
-    <div class="desc">Discord requiere 13+ años. Si eres menor, no uses la web sin supervisión. No recogemos datos de menores intencionadamente.</div>
+    <div class="desc">Debes cumplir la edad mínima exigida por Discord y las normas aplicables en tu país para usar este espacio.</div>
   </div>
   <div class="list-row reveal right">
     <div class="label">Cambios en esta política</div>
-    <div class="desc">Si cambiamos algo sustancial, lo anunciaremos en #general del Discord. La fecha de arriba se actualizará.</div>
+    <div class="desc">Si cambiamos esta política, actualizaremos la fecha de arriba y avisaremos en Discord cuando el cambio sea relevante.</div>
   </div>
   <div class="list-row reveal left">
     <div class="label">Contacto</div>
@@ -85,14 +86,10 @@
   </div>
 </section>
 
-<footer class="wrap"><footer class="wrap">
+<footer class="wrap">
     <p class="footer-legal"><a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
 </footer>
 
 <script src="script.js"></script>
-<script>
-document.getElementById('policy-date').textContent = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
-document.getElementById('year').textContent = new Date().getFullYear();
-</script>
 </body>
 </html>

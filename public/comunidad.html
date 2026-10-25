@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101611">
+  <meta name="description" content="El espacio privado de Toca Hierbas: comparte partidas, fotos y vídeos con el grupo de Discord.">
+  <title>La comunidad · Toca Hierbas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="community.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="shell nav-inner">
+      <a class="brand" href="index.html" aria-label="Toca Hierbas, inicio"><span class="brand-symbol" aria-hidden="true">✳</span> Toca <strong>Hierbas</strong></a>
+      <nav aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="juego.html">Juegos</a>
+        <a href="comunidad.html" aria-current="page">Comunidad</a>
+      </nav>
+      <a class="header-discord" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener noreferrer">Ir a Discord <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <div class="eyebrow"><span class="live-dot"></span> EL RINCÓN DEL GRUPO <span class="eyebrow-line"></span> 01 / COMUNIDAD</div>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Lo bueno de jugar<br>es <em>contarlo después.</em></h1>
+        <p>Clips, capturas, historias de partida y esas cosas que solo entiende la gente de Toca Hierbas. Este espacio es para quienes están en nuestro Discord.</p>
+      </div>
+      <div class="intro-mark" aria-hidden="true"><span>TH<span class="mark-star">✳</span></span><small>DESDE 2024 · EN EL PRADO</small></div>
+    </section>
+
+    <div id="global-message" class="message" role="status" aria-live="polite" hidden></div>
+    <div id="loading" class="loading"><span class="loading-leaf" aria-hidden="true">✳</span><p>Abriendo el prado…</p></div>
+
+    <section id="auth-view" class="entry-grid" hidden>
+      <div class="entry-story">
+        <div class="story-number">01 <span>—</span> ENTRA</div>
+        <h2>Tu sitio entre<br>la hierba.</h2>
+        <p>Crea tu cuenta, confirma el correo y conecta Discord. Así sabemos que estás dentro del servidor antes de enseñar lo que comparte el grupo.</p>
+        <ol class="steps">
+          <li><span>01</span> Crea tu cuenta con correo</li>
+          <li><span>02</span> Confirma el enlace que te enviamos</li>
+          <li><span>03</span> Verifica que estás en Discord</li>
+        </ol>
+      </div>
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist" aria-label="Acceso">
+          <button id="tab-login" class="active" type="button" role="tab" aria-selected="true">Entrar</button>
+          <button id="tab-signup" type="button" role="tab" aria-selected="false">Crear cuenta</button>
+        </div>
+        <form id="auth-form">
+          <h2 id="auth-title">Qué bueno verte.</h2>
+          <p id="auth-caption">Entra para ver lo que está pasando.</p>
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@email.com">
+          <label for="password">Contraseña</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+          <button id="auth-submit" class="button button-primary" type="submit">Iniciar sesión <span aria-hidden="true">↗</span></button>
+          <button id="forgot-password" class="text-button" type="button">¿Has olvidado la contraseña?</button>
+        </form>
+        <form id="reset-form" hidden>
+          <h2>Nueva contraseña</h2>
+          <p>Elige una contraseña de al menos 8 caracteres.</p>
+          <label for="new-password">Nueva contraseña</label>
+          <input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
+          <button class="button button-primary" type="submit">Guardar contraseña</button>
+        </form>
+        <p class="auth-footnote">Al crear una cuenta aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
+      </div>
+    </section>
+
+    <section id="discord-view" class="gate-card" hidden>
+      <span class="gate-icon" aria-hidden="true">✳</span>
+      <div>
+        <div class="story-number">02 — CONECTA DISCORD</div>
+        <h2>Ya casi estás dentro.</h2>
+        <p>Tu correo está confirmado. Conecta Discord para comprobar que formas parte de Toca Hierbas. Repetimos la comprobación cada 24 horas.</p>
+        <p id="discord-detail" class="gate-detail"></p>
+        <button id="connect-discord" class="button button-primary" type="button">Verificar mi Discord <span aria-hidden="true">↗</span></button>
+        <button class="text-button sign-out" type="button">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <section id="profile-view" class="gate-card" hidden>
+      <span class="gate-icon" aria-hidden="true">↳</span>
+      <div>
+        <div class="story-number">03 — ELIGE TU NOMBRE</div>
+        <h2>¿Cómo te llamamos?</h2>
+        <p>Este nombre aparecerá junto a tus publicaciones y comentarios.</p>
+        <form id="profile-form" class="inline-form">
+          <label for="display-name">Nombre visible</label>
+          <input id="display-name" type="text" minlength="2" maxlength="32" autocomplete="nickname" required placeholder="Tu nombre en el prado">
+          <button class="button button-primary" type="submit">Entrar a la comunidad <span aria-hidden="true">↗</span></button>
+        </form>
+        <button class="text-button sign-out" type="button">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <section id="community-view" class="community-grid" hidden>
+      <div class="feed-column">
+        <div class="section-heading"><div><div class="story-number">EL MURO</div><h2>Lo último en el prado<span class="heading-period">.</span></h2></div><button id="refresh-feed" class="icon-button" type="button" aria-label="Actualizar publicaciones" title="Actualizar">↻</button></div>
+        <form id="post-form" class="composer">
+          <div class="composer-top"><span class="avatar" id="composer-avatar" aria-hidden="true">T</span><div><strong id="composer-name">Tú</strong><small>Comparte algo con el grupo</small></div></div>
+          <label class="visually-hidden" for="post-body">Tu publicación</label>
+          <textarea id="post-body" rows="4" maxlength="3000" placeholder="¿Qué ha pasado hoy en el servidor?"></textarea>
+          <div id="file-preview" class="file-preview" hidden></div>
+          <div class="composer-actions"><label class="attach-button" for="post-file"><span aria-hidden="true">＋</span> Añadir foto o vídeo</label><input id="post-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" hidden><button id="post-submit" class="button button-primary" type="submit">Publicar <span aria-hidden="true">↗</span></button></div>
+          <p class="field-hint">Imágenes y vídeos de hasta 25 MB. Solo los miembros verificados pueden verlos.</p>
+        </form>
+        <div id="feed-status" class="feed-status" role="status" aria-live="polite"></div>
+        <div id="feed" class="feed"></div>
+      </div>
+      <aside class="sidebar" aria-label="Información de la comunidad">
+        <div class="sidebar-card member-card"><span class="member-symbol" aria-hidden="true">✳</span><div class="story-number">TU RINCÓN</div><h3 id="sidebar-name">Bienvenido</h3><p>Un espacio para los que siempre vuelven al voice.</p><button id="recheck-discord" class="text-button" type="button">Renovar acceso de Discord ↗</button><button class="text-button sign-out" type="button">Cerrar sesión</button></div>
+        <div class="sidebar-card rules-card"><div class="story-number">ANTES DE PUBLICAR</div><h3>Que siga el buen rollo.</h3><p>Comparte tus propias capturas, respeta a los demás y evita publicar datos personales. El contenido del muro solo se ve dentro del grupo.</p><a href="reglas.html">Ver las reglas <span aria-hidden="true">↗</span></a></div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="shell"><span>Toca Hierbas <span aria-hidden="true">✳</span> Un lugar para volver.</span><div><a href="privacidad.html">Privacidad</a><a href="terminos.html">Términos</a><a href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener noreferrer">Discord ↗</a></div></div></footer>
+  <script src="community-config.js"></script>
+  <script src="community.js" type="module"></script>
+</body>
+</html>

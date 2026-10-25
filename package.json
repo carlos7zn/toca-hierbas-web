@@ -1,0 +1,14 @@
+{
+  "name": "toca-hierbas-web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node scripts/generate-gallery.js && node scripts/generate-community-config.js && esbuild src/community.js --bundle --format=esm --minify --outfile=public/community.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
