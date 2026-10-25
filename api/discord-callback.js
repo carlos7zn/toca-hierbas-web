@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Set-Cookie', 'toca_oauth=; HttpOnly; Secure; SameSite=Lax; Path=/api/discord-callback; Max-Age=0');
   if (req.method !== 'GET') return res.status(405).end();
-  if (!process.env.OAUTH_STATE_SECRET || !process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.DISCORD_CLIENT_SECRET) {
+  if (!process.env.OAUTH_STATE_SECRET || !process.env.SUPABASE_SECRET_KEY || !process.env.DISCORD_CLIENT_SECRET) {
     return redirect(res, 'configuracion');
   }
 
@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
     ]);
     if (!meResponse.ok) return redirect(res, 'discord');
     const me = await meResponse.json();
-    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
     if (!memberResponse.ok) {
