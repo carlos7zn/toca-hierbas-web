@@ -11,7 +11,7 @@ La web usa el proyecto Supabase `toca-hierbas` (`rfcifojiysmiblyfeaer`) para cue
 
 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL` y `DISCORD_GUILD_ID` ya están configuradas en Vercel para Production y Preview. El acceso OAuth se redirige al dominio de producción; una preview con dominio distinto puede mostrar el diseño, pero el recorrido completo debe probarse en producción.
 
-La comunidad está publicada desde `main` en `https://toca-hierbas.vercel.app/comunidad.html`. Ya no necesita SMTP ni dominio propio: la cuenta se crea al entrar con Discord y el servidor comprueba la pertenencia antes de dar acceso. Se ha probado el inicio de sesión y la comprobación del servidor con una cuenta real; queda probar una publicación y un archivo desde el muro.
+La comunidad está publicada desde `main` en `https://toca-hierbas.vercel.app/comunidad.html`. Ya no necesita SMTP ni dominio propio: la cuenta se crea al entrar con Discord y el servidor comprueba la pertenencia antes de dar acceso. Se probaron el inicio de sesión, la comprobación del servidor, una publicación con imagen y su borrado. La publicación temporal y su archivo se eliminaron al terminar.
 
 ## Desarrollo
 

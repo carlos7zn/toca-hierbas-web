@@ -170,7 +170,9 @@ async function loadFeed(older = false) {
     else if (!older) oldestPostTime = null;
     $('load-more').hidden = posts.length < 30;
     const count = feed.querySelectorAll('.post').length;
-    $('feed-status').textContent = count ? `${count} ${count === 1 ? 'publicación' : 'publicaciones'} mostradas` : '';
+    $('feed-status').textContent = count
+      ? `${count} ${count === 1 ? 'publicación mostrada' : 'publicaciones mostradas'}`
+      : '';
   } catch (error) {
     $('feed-status').textContent = 'No hemos podido cargar el muro.';
     message(error.message, true);
