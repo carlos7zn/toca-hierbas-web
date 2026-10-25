@@ -8,9 +8,11 @@ La web usa el proyecto Supabase `toca-hierbas` (`rfcifojiysmiblyfeaer`) para cue
 2. **Hecho:** La aplicación de Discord existente `toca hierbas web` (`1564028954086609066`) tiene `https://toca-hierbas.vercel.app/api/discord-callback` como redirect URI. El flujo solicita los scopes `identify` y `guilds.members.read`; no necesita bot.
 3. **Hecho:** `DISCORD_CLIENT_ID` y `DISCORD_CLIENT_SECRET` están en las variables de entorno **Production** de Vercel. El secreto está guardado como tipo Secret.
 4. **Hecho:** Una **secret key** de Supabase está en Vercel como `SUPABASE_SECRET_KEY`, tipo Secret y **solo para Production**. Es la clave actual que sustituye a la antigua `service_role` y tiene los mismos permisos elevados. Nunca ponerla en GitHub, en una preview ni en `public/`.
-5. En Supabase → Authentication → Emails → SMTP Settings, configurar un servicio SMTP propio y un remitente verificado antes de invitar a miembros. El SMTP de prueba de Supabase no entrega correos a direcciones ajenas al equipo del proyecto.
+5. **Pendiente por decisión del propietario:** esperar a tener un dominio propio. Después, verificar el dominio en un proveedor de correo y configurar su servicio en Supabase → Authentication → Emails → SMTP Settings antes de invitar a miembros. El SMTP de prueba de Supabase no entrega correos a direcciones ajenas al equipo del proyecto.
 
 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL` y `DISCORD_GUILD_ID` ya están configuradas en Vercel para Production y Preview. `OAUTH_STATE_SECRET` es de tipo Secret y existe solo en Production. El flujo OAuth usa la URL de producción; una preview con dominio distinto puede mostrar el diseño y el muro, pero la vinculación con Discord se comprueba en el dominio de producción.
+
+La comunidad está en la rama `feat/comunidad-supabase`; no se ha integrado en `main` ni publicado en Production. Cuando exista el dominio y funcione el correo, comprobar el recorrido completo de alta, confirmación, entrada con Discord y publicación antes de activar la nueva versión de la web.
 
 ## Desarrollo
 
