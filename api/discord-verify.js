@@ -22,13 +22,14 @@ module.exports = async function handler(req, res) {
     if (userError || !user) return res.status(401).json({ error: 'La sesión ha caducado.' });
 
     const identity = user.identities?.find((item) => item.provider === 'discord');
-    if (!identity?.provider_id) return res.status(403).json({ error: 'Entra con una cuenta de Discord.' });
+    const discordId = identity?.provider_id || identity?.id;
+    if (!discordId) return res.status(403).json({ error: 'Entra con una cuenta de Discord.' });
 
     const headers = { Authorization: `Bearer ${providerToken}` };
     const meResponse = await fetch('https://discord.com/api/v10/users/@me', { headers });
     if (!meResponse.ok) return res.status(401).json({ error: 'Vuelve a autorizar Discord.' });
     const me = await meResponse.json();
-    if (me.id !== identity.provider_id) return res.status(403).json({ error: 'La cuenta de Discord no coincide con tu sesión.' });
+    if (me.id !== discordId) return res.status(403).json({ error: 'La cuenta de Discord no coincide con tu sesión.' });
 
     const memberResponse = await fetch(`https://discord.com/api/v10/users/@me/guilds/${process.env.DISCORD_GUILD_ID}/member`, { headers });
     const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {

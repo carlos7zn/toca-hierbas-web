@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "node scripts/generate-gallery.js && node scripts/generate-community-config.js && esbuild src/community.js --bundle --format=esm --minify --outfile=public/community.js"
+    "build": "node scripts/generate-gallery.js && node scripts/generate-community-config.js && esbuild src/community.js --bundle --format=esm --minify --outfile=public/community.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0"
