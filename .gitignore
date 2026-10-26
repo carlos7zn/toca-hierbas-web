@@ -4,3 +4,4 @@ node_modules/
 public/community.js
 public/community-config.js
 public/gallery.json
+.taste-skill/

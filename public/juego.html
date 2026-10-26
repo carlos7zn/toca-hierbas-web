@@ -1,877 +1,552 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<!--
-  ═══════════════════════════════════════════════════════════════
-  
-  LORE OCULTO: LA BIBLIOTECA DE JUEGOS — EL ARCHIVO DEL PRADO
-  ═══════════════════════════════════════════════════════════════
-  
-  juego.html no es una biblioteca. Es un almacén de semillas.
-  
-  🎮 JUEGOS DESTACADOS (games-grid)
-     Cada game-card es un sobre de semillas.
-     hover → transform: translateY(-6px) = germinación.
-     ::before gradient = nutrientes activándose.
-   
-  🚜 CORTA HIERBAS — La siega eterna
-     Bad Kefir lo sembró. Crece en 14x9 tiles.
-     Récord global = variable uninitialized.
-     Jugar → merge a rama 'prado-prohibido'.
-   
-  ⚡ ATRAPA LAS HOJAS — Cosecha rápida
-     20 segundos. Click = commit.
-     Spawn cada 600ms = CI pipeline.
-     Score final = build passed.
-   
-  🧠 ADIVINA EL JUEGO — Memoria del prado
-     12 parejas = 24 cartas = 24 horas en un día.
-     Memory game = cache del navegador.
-     Encontrar todas = clear cache + refresh.
-   
-  ⏱️ REACCIONA RÁPIDO — Reflejos del deploy
-     Random delay 1-3s = latency de red.
-     Reaction time = TTFP (Time To First Paint).
-     Best time guardado en localStorage = cache persistente.
-   
-  ❓ TRIVIA GAMER — Conocimiento ancestral
-     5 preguntas = 5 stages de pipeline.
-     Score = tests passing.
-     Jugar de nuevo = re-run workflow.
-   
-  🌱 ¿TIENES UN JUEGO? — Contribuye al prado
-     Discord link = pull request template.
-     "Compártelo con nosotros" = fork + PR.
-     Revisado por HM y HI = code review.
-   
-  ═══════════════════════════════════════════════════════════════
-  
-  "A game is not code. A game is a seed.
-   Play it once → sprout. Play it twice → grow.
-   Speedrun → harvest. 100% → perennial."
-  
-  — Bad Kefir, package.json, scripts section
-  
-  ═══════════════════════════════════════════════════════════════
--->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Biblioteca de Juegos · Toca Hierbas</title>
-<meta name="description" content="Minijuegos y arcade de la comunidad Toca Hierbas. Corta Hierbas, Atrapa las Hojas y más." />
-<meta name="theme-color" content="#0f1210" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 12.5 9 9.2C7.6 7.7 5.9 6.8 5.1 6.8C5.1 6.8 5.4 10.2 7.4 12.5C9.4 14.8 12.2 15.4 12.2 19Z' fill='%238aab5c'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 11.3 15.2 8.5C16.6 7.2 18.3 6.5 19.1 6.5C19.1 6.5 18.8 10.1 16.8 12.5C14.7 14.9 12.2 15.6 12.2 19Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<style>
-.games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 36px;
-}
-.game-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.game-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(138,171,92,0.06), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.game-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.3), 0 0 0 1px var(--accent);
-  background: var(--surface-elevated);
-}
-.game-card:hover::before {
-  opacity: 1;
-}
-.game-card-tag {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-strong);
-  background: rgba(138,171,92,0.12);
-  padding: 4px 10px;
-  border-radius: 6px;
-  width: fit-content;
-}
-.game-card h3 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.35rem;
-  margin: 0;
-  color: var(--text);
-}
-.game-card p {
-  color: var(--text-dim);
-  font-size: 0.95rem;
-  margin: 0;
-  line-height: 1.6;
-  flex-grow: 1;
-}
-.game-card .author {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  opacity: 0.8;
-}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Biblioteca de Juegos · Toca Hierbas</title>
+    <meta
+      name="description"
+      content="Minijuegos y arcade de la comunidad Toca Hierbas. Corta Hierbas, Atrapa las Hojas y más."
+    />
+    <meta name="theme-color" content="#0f1210" />
+    <link rel="icon" href="brand-mark.svg" type="image/svg+xml" />
 
-/* Classic embedded clicker mini-game styling */
-.arcade-section {
-  margin-top: 60px;
-  border-top: 1px solid var(--border);
-  padding-top: 60px;
-}
-</style>
-</head>
-<body>
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="premium.css" />
+  </head>
+  <body>
+    <div class="bg-atmosphere" aria-hidden="true"></div>
+    <div class="particles" aria-hidden="true" id="particles"></div>
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
-<div class="bg-atmosphere" aria-hidden="true"></div>
-<div class="particles" aria-hidden="true" id="particles"></div>
-<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+    <nav class="wrap" id="nav" aria-label="Navegación principal">
+      <a href="index.html" class="wordmark" aria-label="Toca Hierbas, inicio"
+        ><svg
+          class="leaf-icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+          /></svg
+        >Toca <span>Hierbas</span></a
+      >
+      <div class="nav-links" id="site-links">
+        <a href="index.html">Inicio</a
+        ><a href="juego.html" class="active" aria-current="page">Juegos</a
+        ><a href="comunidad.html">Comunidad</a><a href="media.html">Media</a
+        ><a href="equipo.html">Equipo</a><a href="reglas.html">Reglas</a
+        ><a href="faq.html">Ayuda</a>
+      </div>
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        aria-label="Cambiar tema"
+        aria-pressed="false"
+      >
+        <svg
+          class="icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M20 15A8 8 0 0 1 9 4a8 8 0 1 0 11 11Z" /></svg
+        ><svg
+          class="icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"
+          />
+        </svg>
+      </button>
+      <a
+        class="btn"
+        href="https://discord.gg/SHkPny2Z3z"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Unirse</a
+      >
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="site-links"
+      >
+        <span></span><span></span>
+      </button>
+    </nav>
 
-<nav class="wrap" id="nav">
-  <a href="index.html" class="wordmark">
-    <svg class="leaf-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/>
-      <path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/>
-    </svg>
-    Toca <span>Hierbas</span>
-  </a>
-  <div class="nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="reglas.html">Reglas</a>
-      <a href="equipo.html">Equipo</a>
-      <a href="faq.html">FAQ</a>
-      <a href="juego.html" class="active">Juegos</a>
-    <a href="comunidad.html">Comunidad</a>
-    </div>
-  <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" aria-pressed="false">
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-  </button>
-  <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
-</nav>
+    <main id="main">
+      <header class="page-hero wrap reveal up">
+        <h1>Juega un rato.</h1>
+        <p>
+          Minijuegos creados por la comunidad de Toca Hierbas para pasar el rato
+          entre partida y partida.
+        </p>
+      </header>
 
-<header class="page-hero wrap reveal up">
-  <h1>Biblioteca de Juegos 🎮</h1>
-  <p>Minijuegos creados por la comunidad de Toca Hierbas para pasar el rato entre partida y partida.</p>
-</header>
-
-<section class="wrap reveal up">
-  <h2>Juegos destacados</h2>
-  <div class="games-grid">    <!-- Corta Hierbas -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">🚜 Acción & Survival</span>
-      <h3>Corta Hierbas</h3>
-      <p>Maneja tu cortacésped, esquiva rocas, macetas, gnomos y aspersores peligrosos. Recoge botellas de kéfir y bate el récord mundial en este juegazo arcade.</p>
-      <div class="author">Creador: Bad Kefir</div>
-      <a href="corta-hierbas.html" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Corta Hierbas →</span></a>
-    </div>
-
-    <!-- Atrapa las Hojas -->
-        <div class="game-card reveal up">
-          <span class="game-card-tag">⚡ Minijuego Clásico</span>
-          <h3>Atrapa las Hojas</h3>
-          <p>Tienes 20 segundos. Haz click tan rápido como puedas en las hojas que aparezcan en pantalla para conseguir la máxima puntuación.</p>
-          <div class="author">Creador: Toca Hierbas</div>
-          <a href="#classic-game" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Atrapa las Hojas →</span></a>
+      <section class="wrap reveal up">
+        <div class="library-heading">
+          <h2>Encuentra tu próxima partida.</h2>
+          <label class="visually-hidden" for="game-search">Buscar juegos</label
+          ><input
+            class="game-search"
+            id="game-search"
+            type="search"
+            placeholder="Buscar un juego…"
+            autocomplete="off"
+          />
         </div>
+        <p id="games-empty" hidden>
+          No encontramos ese juego. Prueba otro nombre.
+        </p>
+        <div class="games-grid">
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M10 36h32v18H10zM14 36l7-18h12l7 18M42 42h10V20H39" />
+                <circle cx="17" cy="58" r="6" />
+                <circle cx="43" cy="58" r="6" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Acción & Survival</span>
+            <h3>Corta Hierbas</h3>
+            <p>
+              Maneja tu cortacésped, esquiva rocas, macetas, gnomos y aspersores
+              peligrosos. Recoge botellas de kéfir y bate el récord mundial en
+              este juegazo arcade.
+            </p>
+            <div class="author">Creador: Bad Kefir</div>
+            <a
+              href="corta-hierbas.html"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Corta Hierbas →</span></a
+            >
+          </div>
 
-        <!-- Adivina el Juego -->
-        <div class="game-card reveal up">
-          <span class="game-card-tag">🧠 Memoria & Observación</span>
-          <h3>Adivina el Juego</h3>
-          <p>¡Encuentra parejas de cartas con logos de juegos populares! ¿Reconoces todos los juegos de la comunidad?</p>
-          <div class="author">Creador: Toca Hierbas</div>
-          <a href="#adivina-juego" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Adivina el Juego →</span></a>
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M32 60C32 32 9 43 9 12c23 0 23 29 23 48C32 26 41 7 59 7c0 31-27 28-27 53Z"
+                />
+              </svg>
+            </div>
+            <span class="game-card-tag">Minijuego Clásico</span>
+            <h3>Atrapa las Hojas</h3>
+            <p>
+              Tienes 20 segundos. Haz click tan rápido como puedas en las hojas
+              que aparezcan en pantalla para conseguir la máxima puntuación.
+            </p>
+            <div class="author">Creador: Toca Hierbas</div>
+            <a
+              href="#classic-game"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Atrapa las Hojas →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="7" y="14" width="31" height="43" rx="5" />
+                <rect x="26" y="7" width="31" height="43" rx="5" />
+                <path d="m36 27 6-6 6 6-6 6z" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Memoria & Observación</span>
+            <h3>Adivina el Juego</h3>
+            <p>
+              Encuentra las parejas de tus juegos favoritos.
+              ¿Reconoces todos los juegos de la comunidad?
+            </p>
+            <div class="author">Creador: Toca Hierbas</div>
+            <a
+              href="#adivina-juego"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Adivina el Juego →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="32" cy="35" r="23" />
+                <path d="M32 12V5m-8 0h16M32 35l12-12" />
+              </svg>
+            </div>
+            <span class="game-card-tag">⏱ Velocidad & Reflexes</span>
+            <h3>Reacciona Rápido</h3>
+            <p>
+              ¿Cuán rápido puedes presionar el botón? Compite contra el
+              cronómetro y bate tu récord personal.
+            </p>
+            <div class="author">Creador: Toca Hierbas</div>
+            <a
+              href="#reacciona-rapido"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Reacciona Rápido →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 22a11 11 0 1 1 18 9c-8 4-8 8-8 12m0 9v3" />
+                <circle cx="32" cy="32" r="28" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Trivia & Conocimiento</span>
+            <h3>Trivia Gamer</h3>
+            <p>
+              Demuestra tu conocimiento sobre juegos, memes y la cultura gamer.
+              ¿Eres el más sabio de Toca Hierbas?
+            </p>
+            <div class="author">Creador: Toca Hierbas</div>
+            <a
+              href="#trivia-gamer"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Trivia Gamer →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M13 58V28a19 19 0 0 1 38 0v30l-10-7-9 7-9-7z" />
+                <circle cx="25" cy="28" r="2" />
+                <circle cx="40" cy="28" r="2" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Horror & Sigilo</span>
+            <h3>Granny Original</h3>
+            <p>
+              Escapa de la casa de la abuela en 5 días. Muévete en silencio,
+              esconde bajo camas y en armarios. Ella lo oye todo. Versión
+              original completa en WebGL.
+            </p>
+            <div class="author">Creador: DVloper (Port: Gru6nny)</div>
+            <a
+              href="granny.html"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Granny →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="15" cy="47" r="12" />
+                <circle cx="52" cy="47" r="12" />
+                <path d="m15 47 13-23 13 23H15m26 0L33 13h12M23 24h14" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Carreras & Acrobacias</span>
+            <h3>Moto X3M Pool Party</h3>
+            <p>
+              La versión veraniega del clásico de motos. 22 niveles con
+              toboganes, tubos, loops y piscinas. Haz acrobacias, evita trampas
+              y llega a meta lo más rápido posible.
+            </p>
+            <div class="author">Creador: MadPuffers (Famobi)</div>
+            <a
+              href="moto-x3m-pool-party.html"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Moto X3M →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="6" y="25" width="52" height="28" rx="8" />
+                <path d="m15 25 5-14h24l6 14M14 36h7m22 0h7M16 53v6m32-6v6" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Simulación & Skill</span>
+            <h3>Parking Simulator</h3>
+            <p>
+              Aparca en 3 niveles de dificultad creciente. Física realista,
+              obstáculos dinámicos y puntuación por precisión y tiempo.
+              Controles: WASD / Flechas / Touch.
+            </p>
+            <div class="author">Creador: Toca Hierbas</div>
+            <a
+              href="parking-simulator.html"
+              class="btn btn-primary"
+              style="margin-top: 8px"
+              ><span>Jugar Parking →</span></a
+            >
+          </div>
+
+          <div class="game-card reveal up">
+            <div class="game-art" aria-hidden="true">
+              <svg
+                viewBox="0 0 64 64"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M32 11v42M11 32h42" />
+                <circle cx="32" cy="32" r="28" />
+              </svg>
+            </div>
+            <span class="game-card-tag">Comunidad</span>
+            <h3>¿Tienes un juego?</h3>
+            <p>
+              ¿Has creado un minijuegos en HTML/JS y quieres que aparezca en la
+              web oficial de Toca Hierbas? ¡Compártelo con nosotros en Discord!
+            </p>
+            <div class="author">Comunidad Toca Hierbas</div>
+            <a
+              href="https://discord.gg/SHkPny2Z3z"
+              target="_blank"
+              rel="noopener"
+              class="btn btn-ghost"
+              style="margin-top: 8px"
+              ><span>Proponer en Discord ↗</span></a
+            >
+          </div>
         </div>
+      </section>
 
-        <!-- Reacciona Rápido -->
-        <div class="game-card reveal up">
-          <span class="game-card-tag">⏱️ Velocidad & Reflexes</span>
-          <h3>Reacciona Rápido</h3>
-          <p>¿Cuán rápido puedes presionar el botón? Compite contra el cronómetro y bate tu récord personal.</p>
-          <div class="author">Creador: Toca Hierbas</div>
-          <a href="#reacciona-rapido" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Reacciona Rápido →</span></a>
-        </div>
-
-        <!-- Trivia Gamer -->
-                <div class="game-card reveal up">
-                  <span class="game-card-tag">❓ Trivia & Conocimiento</span>
-                  <h3>Trivia Gamer</h3>
-                  <p>Demuestra tu conocimiento sobre juegos, memes y la cultura gamer. ¿Eres el más sabio de Toca Hierbas?</p>
-                  <div class="author">Creador: Toca Hierbas</div>
-                  <a href="#trivia-gamer" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Trivia Gamer →</span></a>
-                </div>
-
-            <!-- Granny -->
-                    <div class="game-card reveal up">
-                      <span class="game-card-tag">👵 Horror & Sigilo</span>
-                      <h3>Granny Original</h3>
-                      <p>Escapa de la casa de la abuela en 5 días. Muévete en silencio, esconde bajo camas y en armarios. Ella lo oye todo. Versión original completa en WebGL.</p>
-                      <div class="author">Creador: DVloper (Port: Gru6nny)</div>
-                      <a href="granny.html" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Granny →</span></a>
-                    </div>
-
-                <!-- Moto X3M Pool Party -->
-                                    <div class="game-card reveal up">
-                                      <span class="game-card-tag">🏍️ Carreras & Acrobacias</span>
-                                      <h3>Moto X3M Pool Party</h3>
-                                      <p>La versión veraniega del clásico de motos. 22 niveles con toboganes, tubos, loops y piscinas. Haz acrobacias, evita trampas y llega a meta lo más rápido posible.</p>
-                                      <div class="author">Creador: MadPuffers (Famobi)</div>
-                                      <a href="moto-x3m-pool-party.html" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Moto X3M →</span></a>
-                                    </div>
-
-                                <!-- Parking Simulator -->
-                                    <div class="game-card reveal up">
-                                      <span class="game-card-tag">🅿 Simulación & Skill</span>
-                                      <h3>Parking Simulator</h3>
-                                      <p>Aparca en 3 niveles de dificultad creciente. Física realista, obstáculos dinámicos y puntuación por precisión y tiempo. Controles: WASD / Flechas / Touch.</p>
-                                      <div class="author">Creador: Toca Hierbas</div>
-                                      <a href="parking-simulator.html" class="btn btn-primary" style="margin-top: 8px;"><span>Jugar Parking →</span></a>
-                                    </div>
-
-                                <!-- Sube tu juego -->
-    <div class="game-card reveal up">
-      <span class="game-card-tag">🌱 Comunidad</span>
-      <h3>¿Tienes un juego?</h3>
-      <p>¿Has creado un minijuegos en HTML/JS y quieres que aparezca en la web oficial de Toca Hierbas? ¡Compártelo con nosotros en Discord!</p>
-      <div class="author">Comunidad Toca Hierbas</div>
-      <a href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener" class="btn btn-ghost" style="margin-top: 8px;"><span>Proponer en Discord ↗</span></a>
-    </div></div>
-</section>
-
-<!-- Classic Clicker Game Section -->
-<section class="wrap arcade-section reveal up" id="classic-game">
-  <h2>Minijuego clásico: Atrapa la hierba</h2>
-  <div class="game-wrap" style="max-width: 640px;">
-    <div class="game-hud">
-      <span>Puntos: <strong id="game-score">0</strong></span>
-      <span>Tiempo: <strong id="game-time">20</strong>s</span>
-    </div>
-    <div class="game-area" id="game-area" style="cursor: pointer; position: relative;">
-      <div class="game-empty">Dale a "Jugar" para empezar la ronda rápida.</div>
-    </div>
-    <button class="btn" id="game-start" style="margin-top: 16px;"><span>Jugar Atrapa la Hierba</span></button>
-  </div>
-</section>
-
-<!-- Adivina el Juego - Memory Card Game Section -->
-<section class="wrap arcade-section reveal up" id="adivina-juego">
-  <h2>Adivina el Juego 🧠</h2>
-  <div class="game-wrap" style="max-width: 800px;">
-    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
-      <span>Parejas: <strong id="pairs-found">0</strong>/12</span>
-      <span>Tiempo: <strong id="timer-adivina">30</strong>s</span>
-    </div>
-    <div class="game-area" id="game-area-adivina" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; min-height: 360px;">
-      <!-- Cards injected by JS -->
-    </div>
-    <button class="btn" id="restart-adivina" style="margin-top: 16px; display: none;"><span>Jugar de nuevo</span></button>
-  </div>
-</section>
-
-<!-- Reacciona Rápido - Reaction Time Game Section -->
-<section class="wrap arcade-section reveal up" id="reacciona-rapido">
-  <h2>Reacciona Rápido ⏱️</h2>
-  <div class="game-wrap" style="max-width: 640px; text-align: center;">
-    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
-      <span>Intentos: <strong id="reaction-count">0</strong></span>
-      <span>Mejor tiempo: <strong id="best-reaction">—</strong></span>
-    </div>
-    <div class="game-area" id="game-area-reaction" style="width: 100%; height: 200px; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-      <div style="color: var(--text-dim);">Haz clic en el área cuando estés listo</div>
-    </div>
-    <button class="btn" id="start-reaction" style="margin-top: 16px;"><span>Empezar prueba</span></button>
-  </div>
-</section>
-
-<!-- Trivia Gamer - Quiz Game Section -->
-<section class="wrap arcade-section reveal up" id="trivia-gamer">
-  <h2>Trivia Gamer ❓</h2>
-  <div class="game-wrap" style="max-width: 720px;">
-    <div class="game-hud" style="display: flex; gap: 24px; justify-content: center; margin-bottom: 16px;">
-      <span>Pregunta: <strong id="trivia-question">1</strong>/<span id="trivia-total">5</span></span>
-      <span>Puntuación: <strong id="trivia-score">0</strong></span>
-    </div>
-    <div id="trivia-questions">
-      <!-- Questions injected by JS -->
-    </div>
-    <button class="btn" id="next-trivia" style="margin-top: 16px; display: none;"><span>Siguiente</span></button>
-  </div>
-</section>
-
-<script>
-// Trivia Questions Data
-const triviaQuestions = [
-  {
-    question: "¿En qué año salió el primer Counter-Strike como mod de Half-Life?",
-    options: [
-      { text: "1999", correct: true },
-      { text: "2000", correct: false },
-      { text: "2001", correct: false },
-      { text: "1998", correct: false }
-    ]
-  },
-  {
-    question: "¿Cuál es el nombre del protagonista de la saga Metal Gear Solid?",
-    options: [
-      { text: "Solid Snake", correct: true },
-      { text: "Big Boss", correct: false },
-      { text: "Raiden", correct: false },
-      { text: "Venom Snake", correct: false }
-    ]
-  },
-  {
-    question: "¿Qué empresa desarrolló el juego 'Hollow Knight'?",
-    options: [
-      { text: "Team Cherry", correct: true },
-      { text: "Supergiant Games", correct: false },
-      { text: "Motion Twin", correct: false },
-      { text: "ConcernedApe", correct: false }
-    ]
-  },
-  {
-    question: "En League of Legends, ¿cuántos campeones hay aproximadamente (2024)?",
-    options: [
-      { text: "160+", correct: true },
-      { text: "140+", correct: false },
-      { text: "120+", correct: false },
-      { text: "180+", correct: false }
-    ]
-  },
-  {
-    question: "¿Cuál es el nombre del perro de Duck Hunt?",
-    options: [
-      { text: "No tiene nombre oficial", correct: true },
-      { text: "Duke", correct: false },
-      { text: "Barker", correct: false },
-      { text: "Rover", correct: false }
-    ]
-  }
-];
-
-// Trivia Gamer - Quiz Game Logic
-let currentQuestion = 0;
-let score = 0;
-
-function renderTriviaQuestions() {
-  const container = document.getElementById('trivia-questions');
-  if (!container) return;
-  
-  container.innerHTML = triviaQuestions.map((q, qIndex) => `
-    <div class="trivia-question" data-question="${qIndex}" style="${qIndex === 0 ? 'display: block;' : 'display: none;'}">
-      <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${q.question}</h3>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        ${q.options.map((opt, oIndex) => `
-          <button class="option" data-index="${oIndex}" data-correct="${opt.correct}" style="
-            padding: 14px 20px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 1rem;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-          " onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            ${opt.text}
+      <section class="wrap arcade-section reveal up" id="classic-game">
+        <h2>Atrapa las hojas</h2>
+        <div class="game-wrap" style="max-width: 640px">
+          <div class="game-hud">
+            <span>Puntos: <strong id="game-score">0</strong></span>
+            <span>Tiempo: <strong id="game-time">20</strong>s</span>
+          </div>
+          <div
+            class="game-area"
+            id="game-area"
+            style="cursor: pointer; position: relative"
+          >
+            <div class="game-empty">
+              Dale a "Jugar" para empezar la ronda rápida.
+            </div>
+          </div>
+          <button class="btn" id="game-start" style="margin-top: 16px">
+            <span>Jugar Atrapa la Hierba</span>
           </button>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-function showQuestion(questionIndex) {
-  document.querySelectorAll('.trivia-question').forEach(q => {
-    q.style.display = 'none';
-  });
-  
-  const currentQ = document.querySelector(`.trivia-question[data-question="${questionIndex}"]`);
-  if (currentQ) {
-    currentQ.style.display = 'block';
-  }
-  
-  document.getElementById('trivia-question').textContent = questionIndex + 1;
-  document.getElementById('trivia-total').textContent = triviaQuestions.length;
-  document.getElementById('trivia-score').textContent = score;
-  
-  document.querySelectorAll('.option').forEach(opt => {
-    opt.classList.remove('selected');
-    opt.style.borderColor = 'var(--border)';
-    opt.style.background = 'var(--surface)';
-  });
-}
-
-function checkAnswer(questionIndex, optionIndex, isCorrect) {
-  if (isCorrect) {
-    score++;
-    document.getElementById('trivia-score').textContent = score;
-  }
-  
-  // Visual feedback
-  const options = document.querySelectorAll(`.trivia-question[data-question="${questionIndex}"] .option`);
-  options.forEach((opt, idx) => {
-    const correct = opt.dataset.correct === 'true';
-    if (idx === optionIndex) {
-      opt.style.borderColor = isCorrect ? 'var(--accent-strong)' : '#e04';
-      opt.style.background = isCorrect ? 'rgba(138,171,92,0.2)' : 'rgba(224,0,68,0.2)';
-    }
-    if (correct) {
-      opt.style.borderColor = 'var(--accent-strong)';
-      opt.style.background = 'rgba(138,171,92,0.2)';
-    }
-    opt.disabled = true;
-  });
-  
-  currentQuestion++;
-  
-  if (currentQuestion < triviaQuestions.length) {
-    document.getElementById('next-trivia').style.display = 'inline-block';
-    document.getElementById('next-trivia').querySelector('span').textContent = 'Siguiente';
-  } else {
-    document.getElementById('next-trivia').style.display = 'inline-block';
-    document.getElementById('next-trivia').querySelector('span').textContent = 'Jugar de nuevo';
-    setTimeout(() => {
-      alert(`¡Juego terminado! Puntuaje final: ${score}/${triviaQuestions.length}`);
-    }, 500);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderTriviaQuestions();
-  showQuestion(currentQuestion);
-  
-  document.querySelectorAll('.option').forEach(option => {
-    option.addEventListener('click', () => {
-      if (option.disabled) return;
-      const questionIndex = parseInt(option.closest('.trivia-question').dataset.question);
-      const optionIndex = parseInt(option.dataset.index);
-      const isCorrect = option.dataset.correct === 'true';
-      
-      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-      option.classList.add('selected');
-      
-      setTimeout(() => {
-        checkAnswer(questionIndex, optionIndex, isCorrect);
-      }, 1000);
-    });
-  });
-  
-  const nextBtn = document.getElementById('next-trivia');
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (currentQuestion < triviaQuestions.length) {
-        showQuestion(currentQuestion);
-        nextBtn.style.display = 'none';
-      } else {
-        currentQuestion = 0;
-        score = 0;
-        showQuestion(currentQuestion);
-        nextBtn.style.display = 'none';
-        nextBtn.querySelector('span').textContent = 'Siguiente';
-      }
-    });
-  }
-});
-</script>
-
-<footer class="wrap"><footer class="wrap">
-    <p class="footer-legal"><a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
-</footer>
-
-<script src="script.js"></script>
-<script>
-// Classic mini-game logic for Atrapa la Hierba
-document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById('game-start');
-  const gameArea = document.getElementById('game-area');
-  const scoreEl = document.getElementById('game-score');
-  const timeEl = document.getElementById('game-time');
-  
-  if(!startBtn || !gameArea) return;
-
-  let score = 0;
-  let timeLeft = 20;
-  let timerId = null;
-  let spawnerId = null;
-  let gamePlaying = false;
-
-  function spawnLeaf(){
-    if(!gamePlaying) return;
-    const leaf = document.createElement('button');
-    leaf.className = 'grass-target';
-    leaf.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/><path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/></svg>`;
-    
-    const maxX = gameArea.clientWidth - 50;
-    const maxY = gameArea.clientHeight - 50;
-    const x = Math.max(10, Math.floor(Math.random() * maxX));
-    const y = Math.max(10, Math.floor(Math.random() * maxY));
-    
-    leaf.style.left = x + 'px';
-    leaf.style.top = y + 'px';
-    
-    leaf.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if(!gamePlaying) return;
-      score++;
-      scoreEl.textContent = score;
-      leaf.remove();
-    });
-    
-    gameArea.appendChild(leaf);
-    
-    setTimeout(() => {
-      if(leaf.parentElement) leaf.remove();
-    }, 1200);
-  }
-
-  startBtn.addEventListener('click', () => {
-    if(gamePlaying) return;
-    gamePlaying = true;
-    score = 0;
-    timeLeft = 20;
-    scoreEl.textContent = score;
-    timeEl.textContent = timeLeft;
-    gameArea.innerHTML = '';
-    startBtn.style.display = 'none';
-
-    timerId = setInterval(() => {
-      timeLeft--;
-      timeEl.textContent = timeLeft;
-      if(timeLeft <= 0){
-        clearInterval(timerId);
-        clearInterval(spawnerId);
-        gamePlaying = false;
-        gameArea.innerHTML = `<div class="game-empty">¡Tiempo agotado! Has conseguido <strong>${score}</strong> puntos.</div>`;
-        startBtn.style.display = 'inline-flex';
-        startBtn.querySelector('span').textContent = 'Jugar otra vez';
-      }
-    }, 1000);
-
-    spawnerId = setInterval(spawnLeaf, 600);
-    spawnLeaf();
-  });
-});
-</script>
-
-<script>
-// Adivina el Juego - Memory Card Game
-let firstCard = null;
-let lockBoard = false;
-let matchedPairs = 0;
-let timer;
-let timeLeft = 30;
-
-function flipCard(card, index, name) {
-  if (lockBoard || card.classList.contains('flipped')) return;
-  
-  card.classList.add('flipped');
-  
-  if (!firstCard) {
-    firstCard = { card, name, index };
-  } else {
-    lockBoard = true;
-    
-    if (firstCard.name === name && firstCard.index !== index) {
-      matchedPairs++;
-      document.getElementById('pairs-found').textContent = matchedPairs;
-      if (matchedPairs === 12) {
-        clearInterval(timer);
-        document.getElementById('restart-adivina').style.display = 'inline-block';
-      }
-    } else {
-      setTimeout(() => {
-        card.classList.remove('flipped');
-        firstCard.card.classList.remove('flipped');
-        firstCard = null;
-        lockBoard = false;
-      }, 1000);
-    }
-  }
-}
-
-function updateTimer() {
-  timeLeft--;
-  document.getElementById('timer-adivina').textContent = timeLeft;
-  if (timeLeft <= 0) {
-    clearInterval(timer);
-    document.getElementById('restart-adivina').style.display = 'inline-block';
-    alert(`¡Tiempo terminado! Encontraste ${matchedPairs} parejas.`);
-  }
-}
-
-function initializeAdivinaGame() {
-  const cards = document.querySelectorAll('#game-area-adivina .card');
-  const gameLogos = [
-    {name: "Valorant", color: "#e74c3c"}, {name: "League of Legends", color: "#ff8c00"},
-    {name: "Minecraft", color: "#2ecc71"}, {name: "Overwatch", color: "#3498db"},
-    {name: "Fortnite", color: "#9b59b6"}, {name: "Apex Legends", color: "#1abc9c"},
-    {name: "CS:GO", color: "#95a5a6"}, {name: "Rocket League", color: "#f39c12"},
-    {name: "Among Us", color: "#e67e22"}, {name: "Dead by Daylight", color: "#e74c3c"},
-    {name: "Rainbow Six", color: "#34495e"}, {name: "Destiny 2", color: "#2c3e50"}
-  ];
-  
-  const gameLogosDuplicated = gameLogos.concat(gameLogos);
-  const shuffledLogos = gameLogosDuplicated.sort(() => Math.random() - 0.5);
-  
-  const gameArea = document.getElementById('game-area-adivina');
-  gameArea.innerHTML = '';
-  
-  shuffledLogos.forEach((logo, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.index = index;
-    card.dataset.name = logo.name;
-    card.style.cssText = `
-      height: 120px;
-      background: ${logo.color}40;
-      border: 2px solid ${logo.color};
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    `;
-    
-    const cardInner = document.createElement('div');
-    cardInner.style.cssText = `
-      transform: rotateY(180deg);
-      transition: transform 0.5s;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `;
-    cardInner.innerHTML = `<div style="color: white; font-weight: bold; font-size: 1.2rem;">${logo.name}</div>`;
-    
-    const cardBack = document.createElement('div');
-    cardBack.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #34495e, #2c3e50);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `;
-    cardBack.innerHTML = '<span style="color: white; font-size: 2rem;">🎮</span>';
-    
-    card.appendChild(cardInner);
-    card.appendChild(cardBack);
-    
-    card.addEventListener('click', () => flipCard(card, index, logo.name));
-    
-    gameArea.appendChild(card);
-  });
-}
-
-function restartAdivinaGame() {
-  matchedPairs = 0;
-  timeLeft = 30;
-  firstCard = null;
-  lockBoard = false;
-  
-  document.getElementById('pairs-found').textContent = '0';
-  document.getElementById('timer-adivina').textContent = '30';
-  document.getElementById('restart-adivina').style.display = 'none';
-  
-  clearInterval(timer);
-  initializeAdivinaGame();
-  timer = setInterval(updateTimer, 1000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initializeAdivinaGame();
-  
-  document.getElementById('restart-adivina').addEventListener('click', restartAdivinaGame);
-  
-  timer = setInterval(updateTimer, 1000);
-});
-</script>
-
-<script>
-// Reacciona Rápido - Reaction Time Game
-let reactionGameActive = false;
-let reactionTimer = null;
-let bestTime = localStorage.getItem('bestReactionTime') ? parseFloat(localStorage.getItem('bestReactionTime')) : null;
-let attempts = 0;
-
-function startReactionGame() {
-  if (reactionGameActive) return;
-  
-  reactionGameActive = true;
-  attempts++;
-  document.getElementById('reaction-count').textContent = attempts;
-  
-  const gameArea = document.getElementById('game-area-reaction');
-  const startBtn = document.getElementById('start-reaction');
-  
-  gameArea.style.background = 'var(--accent)';
-  gameArea.style.borderColor = 'var(--accent-strong)';
-  
-  let startTime = Date.now();
-  
-  const clickHandler = function(e) {
-    if (!reactionGameActive) return;
-    
-    const reactionTime = (Date.now() - startTime) / 1000;
-    
-    gameArea.style.background = 'var(--surface)';
-    gameArea.style.borderColor = 'var(--border)';
-    
-    gameArea.removeEventListener('click', clickHandler);
-    
-    gameArea.innerHTML = `
-      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">${reactionTime.toFixed(2)}s</div>
-        <div style="color: var(--text-dim);">Tu tiempo de reacción</div>
-      </div>
-    `;
-    
-    if (!bestTime || reactionTime < bestTime) {
-      bestTime = reactionTime;
-      localStorage.setItem('bestReactionTime', bestTime.toString());
-      document.getElementById('best-reaction').textContent = bestTime.toFixed(2) + 's';
-    }
-    
-    setTimeout(() => {
-      gameArea.innerHTML = `
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-          <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
-          <div style="color: var(--text-dim);">Haz clic en el área cuando estés listo</div>
         </div>
-      `;
-      reactionGameActive = false;
-    }, 2000);
-  };
-  
-  gameArea.addEventListener('click', clickHandler);
-  
-  startBtn.style.display = 'none';
-  
-  const delay = Math.random() * 2000 + 1000;
-  setTimeout(() => {
-    if (reactionGameActive) {
-      startTime = Date.now();
-    }
-  }, delay);
-}
+      </section>
 
-document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById('start-reaction');
-  if (startBtn) {
-    startBtn.addEventListener('click', startReactionGame);
-  }
-  
-  if (bestTime) {
-    document.getElementById('best-reaction').textContent = bestTime.toFixed(2) + 's';
-  }
-});
-</script>
+      <section class="wrap arcade-section reveal up" id="adivina-juego">
+        <h2>Adivina el Juego 🧠</h2>
+        <div class="game-wrap" style="max-width: 800px">
+          <div
+            class="game-hud"
+            style="
+              display: flex;
+              gap: 24px;
+              justify-content: center;
+              margin-bottom: 16px;
+            "
+          >
+            <span>Parejas: <strong id="pairs-found">0</strong>/12</span>
+            <span>Tiempo: <strong id="timer-adivina">30</strong>s</span>
+          </div>
+          <div
+            class="game-area"
+            id="game-area-adivina"
+            style="
+              display: grid;
+              grid-template-columns: repeat(6, 1fr);
+              gap: 12px;
+              min-height: 360px;
+            "
+          ></div>
+          <button
+            class="btn"
+            id="restart-adivina"
+            style="margin-top: 16px; display: none"
+          >
+            <span>Jugar de nuevo</span>
+          </button>
+        </div>
+      </section>
 
-<script>
-// Trivia Gamer - Quiz Game
-let currentQuestion = 0;
-let score = 0;
+      <section class="wrap arcade-section reveal up" id="reacciona-rapido">
+        <h2>Reacciona Rápido ⏱️</h2>
+        <div class="game-wrap" style="max-width: 640px; text-align: center">
+          <div
+            class="game-hud"
+            style="
+              display: flex;
+              gap: 24px;
+              justify-content: center;
+              margin-bottom: 16px;
+            "
+          >
+            <span>Intentos: <strong id="reaction-count">0</strong></span>
+            <span>Mejor tiempo: <strong id="best-reaction">—</strong></span>
+          </div>
+          <div
+            class="game-area"
+            id="game-area-reaction"
+            style="
+              width: 100%;
+              height: 200px;
+              background: var(--surface);
+              border: 2px solid var(--border);
+              border-radius: 12px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.3s ease;
+            "
+          >
+            <div style="color: var(--text-dim)">
+              Haz clic en el área cuando estés listo
+            </div>
+          </div>
+          <button class="btn" id="start-reaction" style="margin-top: 16px">
+            <span>Empezar prueba</span>
+          </button>
+        </div>
+      </section>
 
-function showQuestion(questionIndex) {
-  document.querySelectorAll('.trivia-question').forEach(q => {
-    q.style.display = 'none';
-  });
-  
-  const currentQ = document.querySelector(`.trivia-question[data-question="${questionIndex}"]`);
-  if (currentQ) {
-    currentQ.style.display = 'block';
-  }
-  
-  document.getElementById('trivia-question').textContent = questionIndex + 1;
-  document.getElementById('trivia-total').textContent = triviaQuestions.length;
-  document.getElementById('trivia-score').textContent = score;
-  
-  document.querySelectorAll('.option').forEach(opt => {
-    opt.classList.remove('selected');
-  });
-}
+      <section class="wrap arcade-section reveal up" id="trivia-gamer">
+        <h2>Trivia Gamer ❓</h2>
+        <div class="game-wrap" style="max-width: 720px">
+          <div
+            class="game-hud"
+            style="
+              display: flex;
+              gap: 24px;
+              justify-content: center;
+              margin-bottom: 16px;
+            "
+          >
+            <span
+              >Pregunta: <strong id="trivia-question">1</strong>/<span
+                id="trivia-total"
+                >5</span
+              ></span
+            >
+            <span>Puntuación: <strong id="trivia-score">0</strong></span>
+          </div>
+          <div id="trivia-questions"></div>
+          <button
+            class="btn"
+            id="next-trivia"
+            style="margin-top: 16px; display: none"
+          >
+            <span>Siguiente</span>
+          </button>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-top">
+          <div>
+            <a
+              href="index.html"
+              class="wordmark"
+              aria-label="Toca Hierbas, inicio"
+              ><svg
+                class="leaf-icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+                /></svg
+              >Toca <span>Hierbas</span></a
+            >
+            <p>Un lugar para jugar.<br />Una comunidad para volver.</p>
+          </div>
+          <nav class="footer-nav" aria-label="Más de Toca Hierbas">
+            <a href="comunidad.html">Comunidad</a><a href="juego.html">Juegos</a
+            ><a href="media.html">Media</a><a href="equipo.html">Equipo</a
+            ><a href="reglas.html">Reglas</a><a href="faq.html">Ayuda</a>
+          </nav>
+        </div>
+        <div class="footer-bottom">
+          <span
+            >© <span id="year">2026</span> Toca Hierbas · Hecho por Carlos
+            Torres</span
+          >
+          <p class="footer-legal">
+            <a href="privacidad.html">Privacidad</a
+            ><a href="terminos.html">Términos</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script src="site.js"></script>
 
-function checkAnswer(questionIndex, optionIndex, isCorrect) {
-  if (isCorrect) {
-    score++;
-    document.getElementById('trivia-score').textContent = score;
-  }
-  
-  currentQuestion++;
-  
-  if (currentQuestion < triviaQuestions.length) {
-    showQuestion(currentQuestion);
-    document.getElementById('next-trivia').style.display = 'inline-block';
-  } else {
-    document.getElementById('next-trivia').textContent = 'Jugar de nuevo';
-    document.getElementById('next-trivia').style.display = 'inline-block';
-    alert(`¡Juego terminado! Puntuaje final: ${score}/${triviaQuestions.length}`);
-    
-    currentQuestion = 0;
-    score = 0;
-    showQuestion(currentQuestion);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  showQuestion(currentQuestion);
-  
-  document.querySelectorAll('.option').forEach(option => {
-    option.addEventListener('click', () => {
-      const questionIndex = parseInt(option.closest('.trivia-question').dataset.question);
-      const optionIndex = parseInt(option.dataset.index);
-      const isCorrect = option.dataset.correct === 'true';
-      
-      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-      option.classList.add('selected');
-      
-      setTimeout(() => {
-        checkAnswer(questionIndex, optionIndex, isCorrect);
-      }, 1000);
-    });
-  });
-  
-  const nextBtn = document.getElementById('next-trivia');
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (currentQuestion < triviaQuestions.length) {
-        showQuestion(currentQuestion);
-      } else {
-        currentQuestion = 0;
-        score = 0;
-        showQuestion(currentQuestion);
-        nextBtn.style.display = 'none';
-      }
-    });
-  }
-});
-</script>
-</body>
+    <script src="arcade.js"></script>
+  </body>
 </html>

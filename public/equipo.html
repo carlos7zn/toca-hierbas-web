@@ -1,299 +1,383 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Equipo · Toca Hierbas</title>
-<meta name="description" content="El equipo detrás de Toca Hierbas: admins y mods que mantienen el server vivo." />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z' fill='%238aab5c'/%3E%3Cpath d='M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Equipo · Toca Hierbas</title>
+    <meta
+      name="description"
+      content="El equipo detrás de Toca Hierbas: admins y mods que mantienen el server vivo."
+    />
+    <link rel="icon" href="brand-mark.svg" type="image/svg+xml" />
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="premium.css" />
+  </head>
+  <body>
+    <div class="bg-atmosphere" aria-hidden="true"></div>
+    <div class="particles" aria-hidden="true" id="particles"></div>
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
-<div class="bg-atmosphere" aria-hidden="true"></div>
-<div class="particles" aria-hidden="true" id="particles"></div>
-<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+    <nav class="wrap" id="nav" aria-label="Navegación principal">
+      <a href="index.html" class="wordmark" aria-label="Toca Hierbas, inicio"
+        ><svg
+          class="leaf-icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+          /></svg
+        >Toca <span>Hierbas</span></a
+      >
+      <div class="nav-links" id="site-links">
+        <a href="index.html">Inicio</a><a href="juego.html">Juegos</a
+        ><a href="comunidad.html">Comunidad</a><a href="media.html">Media</a
+        ><a href="equipo.html" class="active" aria-current="page">Equipo</a
+        ><a href="reglas.html">Reglas</a><a href="faq.html">Ayuda</a>
+      </div>
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        aria-label="Cambiar tema"
+        aria-pressed="false"
+      >
+        <svg
+          class="icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M20 15A8 8 0 0 1 9 4a8 8 0 1 0 11 11Z" /></svg
+        ><svg
+          class="icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"
+          />
+        </svg>
+      </button>
+      <a
+        class="btn"
+        href="https://discord.gg/SHkPny2Z3z"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Unirse</a
+      >
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="site-links"
+      >
+        <span></span><span></span>
+      </button>
+    </nav>
 
-<nav class="wrap" id="nav">
-  <a href="index.html" class="wordmark">
-    <svg class="leaf-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/>
-      <path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/>
-    </svg>
-    Toca <span>Hierbas</span>
-  </a>
-  <div class="nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="reglas.html">Reglas</a>
-      <a href="equipo.html" class="active">Equipo</a>
-      <a href="faq.html">FAQ</a>
-      <a href="juego.html">Juegos</a>
-    <a href="comunidad.html">Comunidad</a>
-    </div>
-  <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" aria-pressed="false">
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-  </button>
-  <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
-</nav>
+    <header class="page-hero wrap reveal up">
+      <h1>El equipo</h1>
+      <p>
+        Gente normal que dedica su tiempo a que el server funcione. Sin egos,
+        sin jerarquías absurdas.
+      </p>
+    </header>
 
-<header class="page-hero wrap reveal up">
-  <h1>El equipo</h1>
-  <p>Gente normal que dedica su tiempo a que el server funcione. Sin egos, sin jerarquías absurdas.</p>
-</header>
+    <main id="main" class="wrap team-page">
+      <section class="reveal up">
+        <h2>Admins</h2>
+        <div class="admin-row reveal left">
+          <div class="avatar">HM</div>
+          <div>
+            <div class="name">hotweels_mechanic</div>
+            <div class="role">Admin · Fundador · @deadspace0131</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">HI</div>
+          <div>
+            <div class="name">hierbero</div>
+            <div class="role">Admin · Cofundador · @turbo_7zn</div>
+          </div>
+        </div>
+      </section>
 
-<main class="wrap">
-  <section class="reveal up">
-    <h2>Admins</h2>
-    <div class="admin-row reveal left">
-      <div class="avatar">HM</div>
-      <div>
-        <div class="name">hotweels_mechanic</div>
-        <div class="role">Admin · Fundador · @deadspace0131</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">HI</div>
-      <div>
-        <div class="name">hierbero</div>
-        <div class="role">Admin · Cofundador · @turbo_7zn</div>
-      </div>
-    </div>
-  </section>
+      <section class="reveal up">
+        <h2>Mods</h2>
+        <div class="admin-row reveal left">
+          <div class="avatar">TH</div>
+          <div>
+            <div class="name">THB</div>
+            <div class="role">Mod · Eventos</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">BK</div>
+          <div>
+            <div class="name">bAd_KeFir</div>
+            <div class="role">Mod · Memes & comunidad</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">PE</div>
+          <div>
+            <div class="name">pepe</div>
+            <div class="role">Mod · Voz & partidas</div>
+          </div>
+        </div>
+      </section>
 
-  <section class="reveal up">
-    <h2>Mods</h2>
-    <div class="admin-row reveal left">
-      <div class="avatar">TH</div>
-      <div>
-        <div class="name">THB</div>
-        <div class="role">Mod · Eventos</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">BK</div>
-      <div>
-        <div class="name">bAd_KeFir</div>
-        <div class="role">Mod · Memes & comunidad</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">PE</div>
-      <div>
-        <div class="name">pepe</div>
-        <div class="role">Mod · Voz & partidas</div>
-      </div>
-    </div>
-  </section>
+      <section class="reveal up">
+        <h2>Miembros destacados</h2>
+        <div class="admin-row reveal left">
+          <div class="avatar">CA</div>
+          <div>
+            <div class="name">carlangs</div>
+            <div class="role">Veterano · @carlangs</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">PE</div>
+          <div>
+            <div class="name">PEPE</div>
+            <div class="role">Activo · @pepe_master109_56024</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">DN</div>
+          <div>
+            <div class="name">Danielon2339 🗡️ ARK</div>
+            <div class="role">Comunidad · @danielon33</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">AP</div>
+          <div>
+            <div class="name">Aprroachi</div>
+            <div class="role">Activo · @aprroachi_76029</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">TH</div>
+          <div>
+            <div class="name">the hackerman 🍃 THB</div>
+            <div class="role">Activo · @yeraypin2011_34022</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">MA</div>
+          <div>
+            <div class="name">Macareno (señor de la noche)</div>
+            <div class="role">Activo · @bonbardero</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">MK</div>
+          <div>
+            <div class="name">mark 🍃 THB</div>
+            <div class="role">Activo · @devilyogur</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">BK</div>
+          <div>
+            <div class="name">bAd_KeFir 🍃 THB</div>
+            <div class="role">Mod · Memes & comunidad</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">MP</div>
+          <div>
+            <div class="name">mister pereira 🍃 THB</div>
+            <div class="role">Activo · @soaringflame808</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">IN</div>
+          <div>
+            <div class="name">Indalecio_42 🤡</div>
+            <div class="role">Activo · @indalecio_42</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">ER</div>
+          <div>
+            <div class="name">ericc 🗡️ 11D</div>
+            <div class="role">Miembro · @galego0005</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">ME</div>
+          <div>
+            <div class="name">meu</div>
+            <div class="role">Bot · @TOCADOR DE HIERBAS#5882</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">UM</div>
+          <div>
+            <div class="name">uma</div>
+            <div class="role">Miembro · @umitiuxx</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">PM</div>
+          <div>
+            <div class="name">PMaxzito 🍃 THB</div>
+            <div class="role">Miembro · @pmaxzito</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">FR</div>
+          <div>
+            <div class="name">Francescaajuu</div>
+            <div class="role">Miembro · @francescaajuu</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">TH2</div>
+          <div>
+            <div class="name">The hackerman 2</div>
+            <div class="role">Miembro · @thehackerman2_76360</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">VT</div>
+          <div>
+            <div class="name">Vitorito</div>
+            <div class="role">Miembro · @vitorito33</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">SS</div>
+          <div>
+            <div class="name">sseo2255</div>
+            <div class="role">Miembro · @sseo2255</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">XA</div>
+          <div>
+            <div class="name">Xanax ツ 🍃 THB</div>
+            <div class="role">Miembro · @xan04868</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">XC</div>
+          <div>
+            <div class="name">xaco</div>
+            <div class="role">Miembro · @xaco22</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">BD</div>
+          <div>
+            <div class="name">Buddy123489</div>
+            <div class="role">Miembro · @buddy123489</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">VC</div>
+          <div>
+            <div class="name">vendedor de comandos (schedule)</div>
+            <div class="role">Bot · @oscar.ofunde.chachos</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">LN</div>
+          <div>
+            <div class="name">la nena</div>
+            <div class="role">Bot · @Nekotina#0608</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">CC</div>
+          <div>
+            <div class="name">chipi chape</div>
+            <div class="role">Bot · @Chip#4145</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">ES</div>
+          <div>
+            <div class="name">espanolone</div>
+            <div class="role">Miembro · @lon3_43754</div>
+          </div>
+        </div>
+        <div class="admin-row reveal right">
+          <div class="avatar">AP1</div>
+          <div>
+            <div class="name">aprliar1 🍃 THB</div>
+            <div class="role">Miembro · @aprliar1</div>
+          </div>
+        </div>
+        <div class="admin-row reveal left">
+          <div class="avatar">US</div>
+          <div>
+            <div class="name">usuario_123</div>
+            <div class="role">Comunidad activa</div>
+          </div>
+        </div>
+      </section>
 
-  <section class="reveal up">
-    <h2>Miembros destacados</h2>
-    <div class="admin-row reveal left">
-      <div class="avatar">CA</div>
-      <div>
-        <div class="name">carlangs</div>
-        <div class="role">Veterano · @carlangs</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">PE</div>
-      <div>
-        <div class="name">PEPE</div>
-        <div class="role">Activo · @pepe_master109_56024</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">DN</div>
-      <div>
-        <div class="name">Danielon2339 🗡️ ARK</div>
-        <div class="role">Comunidad · @danielon33</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">AP</div>
-      <div>
-        <div class="name">Aprroachi</div>
-        <div class="role">Activo · @aprroachi_76029</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">TH</div>
-      <div>
-        <div class="name">the hackerman 🍃 THB</div>
-        <div class="role">Activo · @yeraypin2011_34022</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">MA</div>
-      <div>
-        <div class="name">Macareno (señor de la noche)</div>
-        <div class="role">Activo · @bonbardero</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">MK</div>
-      <div>
-        <div class="name">mark 🍃 THB</div>
-        <div class="role">Activo · @devilyogur</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">BK</div>
-      <div>
-        <div class="name">bAd_KeFir 🍃 THB</div>
-        <div class="role">Mod · Memes & comunidad</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">MP</div>
-      <div>
-        <div class="name">mister pereira 🍃 THB</div>
-        <div class="role">Activo · @soaringflame808</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">IN</div>
-      <div>
-        <div class="name">Indalecio_42 🤡</div>
-        <div class="role">Activo · @indalecio_42</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">ER</div>
-      <div>
-        <div class="name">ericc 🗡️ 11D</div>
-        <div class="role">Miembro · @galego0005</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">ME</div>
-      <div>
-        <div class="name">meu</div>
-        <div class="role">Bot · @TOCADOR DE HIERBAS#5882</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">UM</div>
-      <div>
-        <div class="name">uma</div>
-        <div class="role">Miembro · @umitiuxx</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">PM</div>
-      <div>
-        <div class="name">PMaxzito 🍃 THB</div>
-        <div class="role">Miembro · @pmaxzito</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">FR</div>
-      <div>
-        <div class="name">Francescaajuu</div>
-        <div class="role">Miembro · @francescaajuu</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">TH2</div>
-      <div>
-        <div class="name">The hackerman 2</div>
-        <div class="role">Miembro · @thehackerman2_76360</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">VT</div>
-      <div>
-        <div class="name">Vitorito</div>
-        <div class="role">Miembro · @vitorito33</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">SS</div>
-      <div>
-        <div class="name">sseo2255</div>
-        <div class="role">Miembro · @sseo2255</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">XA</div>
-      <div>
-        <div class="name">Xanax ツ 🍃 THB</div>
-        <div class="role">Miembro · @xan04868</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">XC</div>
-      <div>
-        <div class="name">xaco</div>
-        <div class="role">Miembro · @xaco22</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">BD</div>
-      <div>
-        <div class="name">Buddy123489</div>
-        <div class="role">Miembro · @buddy123489</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">VC</div>
-      <div>
-        <div class="name">vendedor de comandos (schedule)</div>
-        <div class="role">Bot · @oscar.ofunde.chachos</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">LN</div>
-      <div>
-        <div class="name">la nena</div>
-        <div class="role">Bot · @Nekotina#0608</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">CC</div>
-      <div>
-        <div class="name">chipi chape</div>
-        <div class="role">Bot · @Chip#4145</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">ES</div>
-      <div>
-        <div class="name">espanolone</div>
-        <div class="role">Miembro · @lon3_43754</div>
-      </div>
-    </div>
-    <div class="admin-row reveal right">
-      <div class="avatar">AP1</div>
-      <div>
-        <div class="name">aprliar1 🍃 THB</div>
-        <div class="role">Miembro · @aprliar1</div>
-      </div>
-    </div>
-    <div class="admin-row reveal left">
-      <div class="avatar">US</div>
-      <div>
-        <div class="name">usuario_123</div>
-        <div class="role">Comunidad activa</div>
-      </div>
-    </div>
-  </section>
+      <section class="reveal up" style="border-top: none">
+        <h2>¿Quieres ayudar?</h2>
+        <p style="color: var(--text-dim); max-width: 60ch">
+          El staff se elige por confianza y actividad, no por pedirlo. Si estás
+          mucho en el server, aportas buen rollo y ayudas a la gente, ya nos
+          fijaremos en ti.
+        </p>
+      </section>
+    </main>
 
-  <section class="reveal up" style="border-top:none;">
-    <h2>¿Quieres ayudar?</h2>
-    <p style="color:var(--text-dim);max-width:60ch;">
-      El staff se elige por confianza y actividad, no por pedirlo. Si estás mucho en el server, aportas buen rollo y ayudas a la gente, ya nos fijaremos en ti.
-    </p>
-  </section>
-</main>
-
-<footer class="wrap"><footer class="wrap">
-    <p class="footer-legal"><a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
-</footer>
-
-<script src="script.js"></script>
-</body>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-top">
+          <div>
+            <a
+              href="index.html"
+              class="wordmark"
+              aria-label="Toca Hierbas, inicio"
+              ><svg
+                class="leaf-icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+                /></svg
+              >Toca <span>Hierbas</span></a
+            >
+            <p>Un lugar para jugar.<br />Una comunidad para volver.</p>
+          </div>
+          <nav class="footer-nav" aria-label="Más de Toca Hierbas">
+            <a href="comunidad.html">Comunidad</a><a href="juego.html">Juegos</a
+            ><a href="media.html">Media</a><a href="equipo.html">Equipo</a
+            ><a href="reglas.html">Reglas</a><a href="faq.html">Ayuda</a>
+          </nav>
+        </div>
+        <div class="footer-bottom">
+          <span
+            >© <span id="year">2026</span> Toca Hierbas · Hecho por Carlos
+            Torres</span
+          >
+          <p class="footer-legal">
+            <a href="privacidad.html">Privacidad</a
+            ><a href="terminos.html">Términos</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script src="site.js"></script>
+  </body>
 </html>

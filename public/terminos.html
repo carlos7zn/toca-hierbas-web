@@ -1,95 +1,217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Términos de Servicio · Toca Hierbas</title>
-<meta name="description" content="Términos y condiciones de uso de la web y comunidad Toca Hierbas." />
-<meta name="theme-color" content="#0f1210" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230f1210'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 12.5 9 9.2C7.6 7.7 5.9 6.8 5.1 6.8C5.1 6.8 5.4 10.2 7.4 12.5C9.4 14.8 12.2 15.4 12.2 19Z' fill='%238aab5c'/%3E%3Cpath d='M12.2 19C12.2 19 12.2 11.3 15.2 8.5C16.6 7.2 18.3 6.5 19.1 6.5C19.1 6.5 18.8 10.1 16.8 12.5C14.7 14.9 12.2 15.6 12.2 19Z' fill='%23a6c47c'/%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Términos de Servicio · Toca Hierbas</title>
+    <meta
+      name="description"
+      content="Términos y condiciones de uso de la web y comunidad Toca Hierbas."
+    />
+    <meta name="theme-color" content="#0f1210" />
+    <link rel="icon" href="brand-mark.svg" type="image/svg+xml" />
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="premium.css" />
+  </head>
+  <body>
+    <div class="bg-atmosphere" aria-hidden="true"></div>
+    <div class="particles" aria-hidden="true" id="particles"></div>
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
-<div class="bg-atmosphere" aria-hidden="true"></div>
-<div class="particles" aria-hidden="true" id="particles"></div>
-<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+    <nav class="wrap" id="nav" aria-label="Navegación principal">
+      <a href="index.html" class="wordmark" aria-label="Toca Hierbas, inicio"
+        ><svg
+          class="leaf-icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+          /></svg
+        >Toca <span>Hierbas</span></a
+      >
+      <div class="nav-links" id="site-links">
+        <a href="index.html">Inicio</a><a href="juego.html">Juegos</a
+        ><a href="comunidad.html">Comunidad</a><a href="media.html">Media</a
+        ><a href="equipo.html">Equipo</a><a href="reglas.html">Reglas</a
+        ><a href="faq.html">Ayuda</a>
+      </div>
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        aria-label="Cambiar tema"
+        aria-pressed="false"
+      >
+        <svg
+          class="icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M20 15A8 8 0 0 1 9 4a8 8 0 1 0 11 11Z" /></svg
+        ><svg
+          class="icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"
+          />
+        </svg>
+      </button>
+      <a
+        class="btn"
+        href="https://discord.gg/SHkPny2Z3z"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Unirse</a
+      >
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="site-links"
+      >
+        <span></span><span></span>
+      </button>
+    </nav>
 
-<nav class="wrap" id="nav">
-  <a href="index.html" class="wordmark">
-    <svg class="leaf-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M12 20C12 20 12 12 8 8C6.2 6.2 4 5 3 5C3 5 3.4 9.2 6 12C8.4 14.8 12 15.5 12 20Z" fill="currentColor"/>
-      <path d="M12 20C12 20 12 10.5 16 7C17.8 5.4 20 4.5 21 4.5C21 4.5 20.6 9 18 12C15.3 15 12 15.8 12 20Z" fill="currentColor"/>
-    </svg>
-    Toca <span>Hierbas</span>
-  </a>
-  <div class="nav-links">
-    <a href="index.html">Inicio</a>
-    <a href="reglas.html">Reglas</a>
-    <a href="equipo.html">Equipo</a>
-    <a href="faq.html">FAQ</a>
-    <a href="juego.html">Juegos</a>
-    <a href="comunidad.html">Comunidad</a>
-    <a href="media.html">Media del Servidor</a>
-  </div>
-  <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" aria-pressed="false">
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-  </button>
-  <a class="btn" href="https://discord.gg/SHkPny2Z3z" target="_blank" rel="noopener"><span>Unirse</span></a>
-</nav>
+    <main id="main">
+      <header class="page-hero wrap reveal up">
+        <h1>Términos de Servicio</h1>
+        <p>
+          Al usar esta web y el servidor de Discord, aceptas estas condiciones.
+        </p>
+      </header>
 
-<header class="page-hero wrap reveal up">
-  <h1>Términos de Servicio</h1>
-  <p>Al usar esta web y el servidor de Discord, aceptas estas condiciones.</p>
-</header>
-
-<section class="wrap reveal up">
-  <div class="list-row reveal left">
-    <div class="label">Uso de la web</div>
-    <div class="desc">La web incluye páginas informativas, juegos y un muro privado para miembros verificados del servidor. No automatices publicaciones ni intentes acceder a contenido de otras cuentas.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Contenido subido a la galería</div>
-    <div class="desc">Al publicar texto, imágenes o vídeo, confirmas que puedes compartirlo y que no contiene datos privados de terceros sin permiso, amenazas, acoso ni contenido ilegal. Los administradores pueden retirar contenido que incumpla estas reglas.</div>
-  </div>
-  <div class="list-row reveal left">
-    <div class="label">Licencia de lo que subes</div>
-    <div class="desc">Conservas la propiedad de lo que publicas. Nos permites mostrarlo a los miembros dentro de la web mientras esté publicado. Puedes borrar tus propias publicaciones o pedir ayuda a un administrador.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Servidor de Discord</div>
-    <div class="desc">El servidor se rige por sus <a href="reglas.html">propias reglas</a> y los <a href="https://discord.com/terms" target="_blank" rel="noopener">Términos de Servicio de Discord</a>. Nosotros solo moderamos; Discord Inc. decide lo que pasa en su plataforma.</div>
-  </div>
-  <div class="list-row reveal left">
-    <div class="label">Sin garantías</div>
-    <div class="desc">La web y el server se dan "tal cual". No garantizamos uptime 100%, que el widget de Discord funcione, que el mini-juego guarde tu high score, ni que el admin no se caiga. Úsalo bajo tu responsabilidad.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Limitación de responsabilidad</div>
-    <div class="desc">No somos responsables por: caídas de Discord, capturas que ofendan a alguien, tiempo perdido jugando al mini-juego, drama en el voice chat, ni por que tu crush no te conteste en #general.</div>
-  </div>
-  <div class="list-row reveal left">
-    <div class="label">Modificaciones</div>
-    <div class="desc">Podemos cambiar la web, añadir/quitar features, cerrar la galería, mover el server, o apagar todo sin previo aviso. Si pasa algo gordo, lo decimos en #general.</div>
-  </div>
-  <div class="list-row reveal right">
-    <div class="label">Ley aplicable y jurisdicción</div>
-    <div class="desc">Comunidad en español, admins en España. Cualquier disputa se resuelve hablando en Discord como personas normales. Si llega a juicio (poco probable), leyes de España, juzgados de la residencia de los admins.</div>
-  </div>
-  <div class="list-row reveal left">
-    <div class="label">Contacto</div>
-    <div class="desc">Preguntas sobre estos términos: MD a <strong>hotweels_mechanic</strong> o <strong>hierbero</strong> en Discord. No hay email corporativo, no hay formulario, no hay DPO.</div>
-  </div>
-</section>
-
-<footer class="wrap">
-    <p class="footer-legal"><a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p>
-</footer>
-
-<script src="script.js"></script>
-</body>
+      <section class="wrap reveal up">
+        <div class="list-row reveal left">
+          <div class="label">Uso de la web</div>
+          <div class="desc">
+            La web incluye páginas informativas, juegos y un muro privado para
+            miembros verificados del servidor. No automatices publicaciones ni
+            intentes acceder a contenido de otras cuentas.
+          </div>
+        </div>
+        <div class="list-row reveal right">
+          <div class="label">Contenido subido a la galería</div>
+          <div class="desc">
+            Al publicar texto, imágenes o vídeo, confirmas que puedes
+            compartirlo y que no contiene datos privados de terceros sin
+            permiso, amenazas, acoso ni contenido ilegal. Los administradores
+            pueden retirar contenido que incumpla estas reglas.
+          </div>
+        </div>
+        <div class="list-row reveal left">
+          <div class="label">Licencia de lo que subes</div>
+          <div class="desc">
+            Conservas la propiedad de lo que publicas. Nos permites mostrarlo a
+            los miembros dentro de la web mientras esté publicado. Puedes borrar
+            tus propias publicaciones o pedir ayuda a un administrador.
+          </div>
+        </div>
+        <div class="list-row reveal right">
+          <div class="label">Servidor de Discord</div>
+          <div class="desc">
+            El servidor se rige por sus
+            <a href="reglas.html">propias reglas</a> y los
+            <a href="https://discord.com/terms" target="_blank" rel="noopener"
+              >Términos de Servicio de Discord</a
+            >. Nosotros solo moderamos; Discord Inc. decide lo que pasa en su
+            plataforma.
+          </div>
+        </div>
+        <div class="list-row reveal left">
+          <div class="label">Sin garantías</div>
+          <div class="desc">
+            La web y el server se dan "tal cual". No garantizamos uptime 100%,
+            que el widget de Discord funcione, que el mini-juego guarde tu high
+            score, ni que el admin no se caiga. Úsalo bajo tu responsabilidad.
+          </div>
+        </div>
+        <div class="list-row reveal right">
+          <div class="label">Limitación de responsabilidad</div>
+          <div class="desc">
+            No somos responsables por: caídas de Discord, capturas que ofendan a
+            alguien, tiempo perdido jugando al mini-juego, drama en el voice
+            chat, ni por que tu crush no te conteste en #general.
+          </div>
+        </div>
+        <div class="list-row reveal left">
+          <div class="label">Modificaciones</div>
+          <div class="desc">
+            Podemos cambiar la web, añadir/quitar features, cerrar la galería,
+            mover el server, o apagar todo sin previo aviso. Si pasa algo gordo,
+            lo decimos en #general.
+          </div>
+        </div>
+        <div class="list-row reveal right">
+          <div class="label">Ley aplicable y jurisdicción</div>
+          <div class="desc">
+            Comunidad en español, admins en España. Cualquier disputa se
+            resuelve hablando en Discord como personas normales. Si llega a
+            juicio (poco probable), leyes de España, juzgados de la residencia
+            de los admins.
+          </div>
+        </div>
+        <div class="list-row reveal left">
+          <div class="label">Contacto</div>
+          <div class="desc">
+            Preguntas sobre estos términos: MD a
+            <strong>hotweels_mechanic</strong> o <strong>hierbero</strong> en
+            Discord. No hay email corporativo, no hay formulario, no hay DPO.
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-top">
+          <div>
+            <a
+              href="index.html"
+              class="wordmark"
+              aria-label="Toca Hierbas, inicio"
+              ><svg
+                class="leaf-icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21C12 11 3 15 3 4c8 0 9 8 9 13C12 7 15 2 22 2c0 12-10 10-10 19Z"
+                /></svg
+              >Toca <span>Hierbas</span></a
+            >
+            <p>Un lugar para jugar.<br />Una comunidad para volver.</p>
+          </div>
+          <nav class="footer-nav" aria-label="Más de Toca Hierbas">
+            <a href="comunidad.html">Comunidad</a><a href="juego.html">Juegos</a
+            ><a href="media.html">Media</a><a href="equipo.html">Equipo</a
+            ><a href="reglas.html">Reglas</a><a href="faq.html">Ayuda</a>
+          </nav>
+        </div>
+        <div class="footer-bottom">
+          <span
+            >© <span id="year">2026</span> Toca Hierbas · Hecho por Carlos
+            Torres</span
+          >
+          <p class="footer-legal">
+            <a href="privacidad.html">Privacidad</a
+            ><a href="terminos.html">Términos</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script src="site.js"></script>
+  </body>
 </html>
